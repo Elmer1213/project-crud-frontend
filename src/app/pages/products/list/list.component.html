@@ -1,0 +1,37 @@
+<div class="container mt-5">
+  <h2>📦 Lista de Productos</h2>
+
+  <div *ngIf="loading" class="alert alert-info mt-3">Cargando productos...</div>
+
+  <div *ngIf="!loading && products.length === 0" class="alert alert-warning mt-3">
+    No hay productos registrados.
+  </div>
+
+  <table *ngIf="!loading && products.length > 0" class="table table-striped mt-3">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Descripción</th>
+        <th>Precio</th>
+        <th>Fecha de creación</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let p of products">
+        <td>{{ p.id }}</td>
+        <td>{{ p.name }}</td>
+        <td>{{ p.description }}</td>
+        <td>${{ p.price }}</td>
+        <td>{{ p.created_at ? (p.created_at | date:'short') : '—' }}</td>
+        <td>
+          <button class="btn btn-sm btn-warning me-2" [routerLink]="['/products/edit', p.id]">Editar</button>
+          <button class="btn btn-sm btn-danger" (click)="deleteProduct(p.id)">Eliminar</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <button class="btn btn-primary mt-3" routerLink="/products/create">➕ Nuevo Producto</button>
+</div>

@@ -1,0 +1,23 @@
+<div class="container mt-5">
+  <h2>🆕 Crear Producto</h2>
+  <form (ngSubmit)="createProduct()">
+    <div class="mb-3">
+      <label class="form-label">Nombre</label>
+      <input type="text" [(ngModel)]="product.name" name="name" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Descripción</label>
+      <textarea [(ngModel)]="product.description" name="description" class="form-control" required></textarea>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Precio</label>
+      <input type="number" [(ngModel)]="product.price" name="price" class="form-control" required>
+    </div>
+
+    <button class="btn btn-primary" [disabled]="loading">
+      {{ loading ? 'Guardando...' : 'Guardar' }}
+    </button>
+  </form>
+</div>

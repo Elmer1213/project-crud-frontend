@@ -1,0 +1,141 @@
+.container {
+  max-width: 900px;
+  margin: 40px auto;
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease-in-out;
+
+  &:hover {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  }
+
+  h2 {
+    text-align: center;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 2rem;
+    position: relative;
+
+    &::after {
+      content: '';
+      display: block;
+      width: 60px;
+      height: 4px;
+      background: linear-gradient(90deg, #007bff, #00bcd4);
+      margin: 8px auto 0;
+      border-radius: 2px;
+    }
+  }
+}
+
+/* Tabla de productos */
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 10px;
+
+  thead {
+    background: linear-gradient(90deg, #007bff, #00bcd4);
+    color: white;
+
+    th {
+      padding: 12px;
+      border: none;
+      text-align: center;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+    }
+  }
+
+  tbody {
+    tr {
+      background: #f9f9f9;
+      border-radius: 10px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+      &:hover {
+        transform: scale(1.01);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      td {
+        padding: 12px;
+        text-align: center;
+        vertical-align: middle;
+        border-top: 1px solid #eee;
+
+        &:first-child {
+          font-weight: 600;
+          color: #007bff;
+        }
+      }
+    }
+  }
+}
+
+/* Botones */
+.btn {
+  border-radius: 10px;
+  font-weight: 600;
+  transition: all 0.2s ease-in-out;
+  padding: 6px 14px;
+
+  &.btn-warning {
+    background-color: #ffca28;
+    border: none;
+    color: #333;
+
+    &:hover {
+      background-color: #ffc107;
+      transform: translateY(-2px);
+    }
+  }
+
+  &.btn-danger {
+    background-color: #e53935;
+    border: none;
+
+    &:hover {
+      background-color: #c62828;
+      transform: translateY(-2px);
+    }
+  }
+
+  &.btn-primary {
+    background: linear-gradient(90deg, #007bff, #00bcd4);
+    border: none;
+
+    &:hover {
+      opacity: 0.9;
+      transform: translateY(-2px);
+    }
+  }
+}
+
+/* Mensajes */
+.alert {
+  border-radius: 10px;
+  font-weight: 500;
+  text-align: center;
+  padding: 15px;
+}
+
+/* Animación de carga */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.table, .alert, button {
+  animation: fadeIn 0.3s ease-in-out;
+}
