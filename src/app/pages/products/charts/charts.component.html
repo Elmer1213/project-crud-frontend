@@ -1,0 +1,40 @@
+<!-- frontend/src/app/pages/products/charts/charts.component.html -->
+<div class="charts-wrapper">
+
+  <div class="progress-block">
+    <h4>Progreso de importación</h4>
+    <p class="muted">{{ step }}</p>
+
+    <div class="progress">
+      <div class="progress-bar" [style.width.%]="progress">
+        {{ progress }}%
+      </div>
+    </div>
+
+    <div class="progress-donut">
+      <canvas id="progressDonut" width="120" height="120"></canvas>
+      <!-- alternativamente, reutilizamos la doughnutChart para mostrar progreso
+           pero para simplicidad mostramos texto -->
+      <div class="progress-label">
+        {{ progress }}%
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-charts">
+    <div class="chart-card">
+      <h5>Productos por rango de precio</h5>
+      <div class="chart-canvas">
+        <canvas id="barCanvas"></canvas>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <h5>Económicos vs Costosos</h5>
+      <div class="chart-canvas">
+        <canvas id="doughnutCanvas"></canvas>
+      </div>
+    </div>
+  </div>
+
+</div>

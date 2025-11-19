@@ -1,141 +1,168 @@
+// 🎨 Paleta moderna
+$primary: #0066ff;
+$secondary: #00c2ff;
+$danger: #e53935;
+$warning: #ffb300;
+$bg-light: #f8faff;
+$text-dark: #2c2c2c;
+
+// 🟦 Contenedor general
 .container {
-  max-width: 900px;
+  max-width: 1000px;
   margin: 40px auto;
   background: #ffffff;
-  padding: 30px;
+  padding: 35px;
   border-radius: 20px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease-in-out;
 
   &:hover {
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.12);
   }
 
   h2 {
     text-align: center;
     font-weight: 700;
-    color: #333;
-    margin-bottom: 20px;
-    font-size: 2rem;
+    color: $text-dark;
+    margin-bottom: 25px;
+    font-size: 2.1rem;
     position: relative;
 
     &::after {
       content: '';
       display: block;
-      width: 60px;
+      width: 70px;
       height: 4px;
-      background: linear-gradient(90deg, #007bff, #00bcd4);
-      margin: 8px auto 0;
+      background: linear-gradient(90deg, $primary, $secondary);
+      margin: 10px auto 0;
       border-radius: 2px;
     }
   }
 }
 
-/* Tabla de productos */
+// 🧾 Tabla de productos elegante
 .table {
   width: 100%;
   border-collapse: separate;
-  border-spacing: 0 10px;
+  border-spacing: 0 12px;
 
   thead {
-    background: linear-gradient(90deg, #007bff, #00bcd4);
+    background: linear-gradient(90deg, $primary, $secondary);
     color: white;
 
     th {
-      padding: 12px;
+      padding: 14px;
       border: none;
       text-align: center;
       font-weight: 600;
       text-transform: uppercase;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
+      letter-spacing: 0.5px;
     }
   }
 
   tbody {
     tr {
-      background: #f9f9f9;
-      border-radius: 10px;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      background: $bg-light;
+      border-radius: 12px;
+      transition: 0.25s ease;
 
       &:hover {
-        transform: scale(1.01);
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
       }
 
       td {
-        padding: 12px;
+        padding: 14px;
         text-align: center;
         vertical-align: middle;
-        border-top: 1px solid #eee;
+        border-top: 1px solid #eaecef;
 
         &:first-child {
-          font-weight: 600;
-          color: #007bff;
+          font-weight: 700;
+          color: $primary;
         }
       }
     }
   }
 }
 
-/* Botones */
+// 🟢 Botones mejorados
 .btn {
   border-radius: 10px;
   font-weight: 600;
-  transition: all 0.2s ease-in-out;
-  padding: 6px 14px;
+  padding: 7px 15px;
+  transition: 0.25s ease;
 
   &.btn-warning {
-    background-color: #ffca28;
+    background-color: $warning;
     border: none;
-    color: #333;
+    color: #222;
 
     &:hover {
-      background-color: #ffc107;
+      background-color: darken($warning, 7%);
       transform: translateY(-2px);
     }
   }
 
   &.btn-danger {
-    background-color: #e53935;
+    background-color: $danger;
     border: none;
+    color: white;
 
     &:hover {
-      background-color: #c62828;
+      background-color: darken($danger, 8%);
       transform: translateY(-2px);
     }
   }
 
   &.btn-primary {
-    background: linear-gradient(90deg, #007bff, #00bcd4);
+    background: linear-gradient(90deg, $primary, $secondary);
     border: none;
+    color: white;
 
     &:hover {
-      opacity: 0.9;
+      filter: brightness(0.95);
       transform: translateY(-2px);
     }
   }
 }
 
-/* Mensajes */
+// 🟡 Alertas refinadas
 .alert {
-  border-radius: 10px;
+  border-radius: 12px;
   font-weight: 500;
   text-align: center;
-  padding: 15px;
+  padding: 16px;
+  animation: fadeIn 0.35s ease-in-out;
 }
 
-/* Animación de carga */
+// 🎬 Animación global
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-.table, .alert, button {
-  animation: fadeIn 0.3s ease-in-out;
+// 📱 Responsive
+@media (max-width: 768px) {
+  .table thead { display: none; }
+
+  .table tr {
+    display: block;
+    margin-bottom: 12px;
+  }
+
+  .table td {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 18px;
+    font-size: 0.9rem;
+    border-top: none;
+
+    &::before {
+      content: attr(data-label);
+      font-weight: 600;
+      color: $primary;
+    }
+  }
 }

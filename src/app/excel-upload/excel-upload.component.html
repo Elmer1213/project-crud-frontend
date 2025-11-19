@@ -1,0 +1,123 @@
+<div class="container">
+
+  <h2 class="title">Cargar Archivo Excel</h2>
+
+  <!-- SELECTOR DE ARCHIVO -->
+  <div class="upload-box">
+    <label class="file-label">
+      <input type="file" (change)="onFileSelected($event)" hidden>
+      <span>Seleccionar archivo Excel</span>
+    </label>
+
+    <!-- Nombre del archivo -->
+    <div *ngIf="selectedFile" class="file-name">
+      Archivo seleccionado:
+      <strong>{{ selectedFile.name }}</strong>
+    </div>
+  </div>
+
+  <!-- SELECTOR DE HOJA -->
+  <div *ngIf="sheets.length > 0" class="sheet-section">
+    <label class="sheet-label">Seleccionar hoja:</label>
+
+    <select class="sheet-select" [(ngModel)]="selectedSheet">
+      <option value="" disabled selected>-- Elegir hoja --</option>
+      <option *ngFor="let s of sheets" [value]="s">{{ s }}</option>
+    </select>
+  </div>
+
+  <!-- BOTÓN PARA CARGAR HOJAS -->
+  <button
+    *ngIf="selectedFile && sheets.length === 0"
+    class="load-sheets-btn"
+    (click)="loadSheets()">
+    Cargar hojas del archivo
+  </button>
+
+  <!-- BOTÓN PARA MOSTRAR VISTA PREVIA -->
+  <button
+    *ngIf="selectedSheet"
+    class="preview-btn"
+    (click)="previewSheet()">
+    Vista previa de la hoja
+  </button>
+
+  <!-- TABLA DE VISTA PREVIA -->
+  <div *ngIf="previewData && previewData.length > 0" class="preview-table-box">
+    <h3 class="preview-title">Vista previa (primeras 10 filas)</h3>
+
+    <table class="preview-table">
+      <thead>
+        <tr>
+          <th *ngFor="let col of displayedColumns">{{ col }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let row of previewData">
+          <td *ngFor="let col of displayedColumns">{{ row[col] }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- PROGRESO DE SUBIDA DEL ARCHIVO -->
+  <div *ngIf="uploadProgress > 0" class="progress-wrapper">
+    <div class="progress-bar" [style.width.%]="uploadProgress"></div>
+    <p class="progress-text">{{ uploadProgress }}%</p>
+  </div>
+
+  <!-- PROGRESO REAL DEL BACKEND (WEBSOCKET) -->
+  <div *ngIf="processingProgress > 0" class="processing-progress">
+    <p class="processing-step">{{ processingStep }}</p>
+
+    <div class="progress-wrapper">
+      <div class="progress-bar" [style.width.%]="processingProgress"></div>
+    </div>
+
+    <p class="progress-text">{{ processingProgress }}%</p>
+  </div>
+
+  <!-- BOTÓN SUBIR -->
+  <button 
+    class="upload-btn" 
+    (click)="uploadFile()"
+    [disabled]="!selectedFile || !selectedSheet || (uploadProgress > 0 && uploadProgress < 100)">
+    Subir Archivo
+  </button>
+
+  <!-- MENSAJE DE ÉXITO -->
+  <div *ngIf="uploadSuccess" class="success-msg">
+    ✔ Archivo Excel subido correctamente.
+  </div>
+
+  <!-- MENSAJE DE ERROR -->
+  <div *ngIf="uploadError" class="error-msg">
+    ✖ {{ uploadError }}
+  </div>
+
+
+  <!-- ======================================================================= -->
+  <!-- 📊 GRÁFICAS DE PRODUCTOS (después de importación exitosa) -->
+  <!-- ======================================================================= -->
+  <div *ngIf="uploadSuccess" class="charts-section">
+
+    <h2 class="chart-title">📊 Estadísticas de Productos Importados</h2>
+
+    <!-- GRÁFICA DE BARRAS -->
+    <div class="chart-box">
+      <h3>Precios por Producto (Barras)</h3>
+      <canvas id="barChartCanvas"></canvas>
+    </div>
+
+    <!-- GRÁFICA DOUGHNUT -->
+    <div class="chart-box">
+      <h3>Distribución de Precios (Doughnut)</h3>
+      <canvas id="doughnutChartCanvas"></canvas>
+    </div>
+
+  </div>
+
+</div>
+
+
+

@@ -1,1 +1,10 @@
 <router-outlet></router-outlet>
+<nav style="background-color: #222; color: white; padding: 10px;">
+  <a routerLink="/products" style="margin: 0 10px; color: white; text-decoration: none;">📦 Productos</a>
+  <a routerLink="/products/create" style="margin: 0 10px; color: white; text-decoration: none;">➕ Crear Producto</a>
+  <a routerLink="/upload-excel" style="margin: 0 10px; color: white; text-decoration: none;">📊 Importar Excel</a>
+</nav>
+
+<div style="padding: 20px;">
+  <router-outlet></router-outlet>
+</div>
