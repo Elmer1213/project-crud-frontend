@@ -1,10 +1,31 @@
-<router-outlet></router-outlet>
-<nav style="background-color: #222; color: white; padding: 10px;">
-  <a routerLink="/products" style="margin: 0 10px; color: white; text-decoration: none;">📦 Productos</a>
-  <a routerLink="/products/create" style="margin: 0 10px; color: white; text-decoration: none;">➕ Crear Producto</a>
-  <a routerLink="/upload-excel" style="margin: 0 10px; color: white; text-decoration: none;">📊 Importar Excel</a>
+<!-- Navbar moderno -->
+<nav class="navbar">
+  <div class="navbar-container">
+    
+    <a routerLink="/products" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-item">
+      <span class="nav-icon">📦</span>
+      <span class="nav-text">Productos</span>
+    </a>
+
+    <a routerLink="/products/create" routerLinkActive="active" class="nav-item">
+      <span class="nav-icon">✨</span>
+      <span class="nav-text">Crear Producto</span>
+    </a>
+
+    <a routerLink="/upload-excel" routerLinkActive="active" class="nav-item">
+      <span class="nav-icon">📊</span>
+      <span class="nav-text">Importar Excel</span>
+    </a>
+
+    <a routerLink="/products/charts" routerLinkActive="active" class="nav-item">
+      <span class="nav-icon">📈</span>
+      <span class="nav-text">Estadísticas</span>
+    </a>
+
+  </div>
 </nav>
 
-<div style="padding: 20px;">
+<!-- Contenido principal -->
+<main class="main-content">
   <router-outlet></router-outlet>
-</div>
+</main>

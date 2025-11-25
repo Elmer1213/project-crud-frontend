@@ -1,40 +1,118 @@
-<!-- frontend/src/app/pages/products/charts/charts.component.html -->
-<div class="charts-wrapper">
+<div class="charts-container">
 
-  <div class="progress-block">
-    <h4>Progreso de importación</h4>
-    <p class="muted">{{ step }}</p>
-
-    <div class="progress">
-      <div class="progress-bar" [style.width.%]="progress">
-        {{ progress }}%
-      </div>
-    </div>
-
-    <div class="progress-donut">
-      <canvas id="progressDonut" width="120" height="120"></canvas>
-      <!-- alternativamente, reutilizamos la doughnutChart para mostrar progreso
-           pero para simplicidad mostramos texto -->
-      <div class="progress-label">
-        {{ progress }}%
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <button class="btn-back" routerLink="/products">
+        <span class="icon">←</span>
+        <span class="text">Volver</span>
+      </button>
+      <div class="header-title">
+        <span class="icon">📊</span>
+        <h1>Análisis de Productos</h1>
       </div>
     </div>
   </div>
 
-  <div class="grid-charts">
-    <div class="chart-card">
-      <h5>Productos por rango de precio</h5>
-      <div class="chart-canvas">
-        <canvas id="barCanvas"></canvas>
+  <!-- Progress Section -->
+  <div class="progress-section">
+    <div class="progress-header">
+      <div class="progress-info">
+        <h3>
+          <span class="info-icon">📈</span>
+          Progreso de Importación
+        </h3>
+        <p class="step-text">{{ step }}</p>
+      </div>
+      <div class="progress-percentage">
+        <span class="percentage-value">{{ progress }}%</span>
+        <span class="percentage-label">Completado</span>
       </div>
     </div>
 
-    <div class="chart-card">
-      <h5>Económicos vs Costosos</h5>
-      <div class="chart-canvas">
-        <canvas id="doughnutCanvas"></canvas>
+    <div class="progress-content">
+      <!-- Progress Bar -->
+      <div class="progress-bar-wrapper">
+        <div class="progress-track">
+          <div class="progress-fill" [style.width.%]="progress">
+            <div class="progress-glow"></div>
+          </div>
+        </div>
+        <div class="progress-marks">
+          <span class="mark">0%</span>
+          <span class="mark">25%</span>
+          <span class="mark">50%</span>
+          <span class="mark">75%</span>
+          <span class="mark">100%</span>
+        </div>
+      </div>
+
+      <!-- Donut Chart -->
+      <div class="progress-donut-wrapper">
+        <div class="donut-container">
+          <canvas id="progressDonut" width="140" height="140"></canvas>
+          <div class="donut-center">
+            <span class="donut-percentage">{{ progress }}%</span>
+            <span class="donut-label">Progreso</span>
+          </div>
+        </div>
       </div>
     </div>
+  </div>
+
+  <!-- Charts Grid -->
+  <div class="charts-grid">
+    
+    <!-- Bar Chart Card -->
+    <div class="chart-card bar-chart-card">
+      <div class="card-header">
+        <div class="card-title">
+          <span class="title-icon">📊</span>
+          <h4>Productos por Rango de Precio</h4>
+        </div>
+        <div class="card-badge">Gráfico de Barras</div>
+      </div>
+      <div class="card-body">
+        <div class="chart-wrapper">
+          <canvas id="barCanvas"></canvas>
+        </div>
+      </div>
+      <div class="card-footer">
+        <span class="footer-info">
+          <span class="info-dot"></span>
+          Distribución de precios
+        </span>
+      </div>
+    </div>
+
+    <!-- Doughnut Chart Card -->
+    <div class="chart-card doughnut-chart-card">
+      <div class="card-header">
+        <div class="card-title">
+          <span class="title-icon">🍩</span>
+          <h4>Económicos vs Costosos</h4>
+        </div>
+        <div class="card-badge">Gráfico Circular</div>
+      </div>
+      <div class="card-body">
+        <div class="chart-wrapper doughnut-wrapper">
+          <canvas id="doughnutCanvas"></canvas>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="legend-items">
+          <span class="legend-item">
+            <span class="legend-dot economic"></span>
+            Económicos
+          </span>
+          <span class="legend-item">
+            <span class="legend-dot expensive"></span>
+            Costosos
+          </span>
+        </div>
+      </div>
+    </div>
+
   </div>
 
 </div>

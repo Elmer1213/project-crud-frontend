@@ -1,51 +1,109 @@
-<div class="container mt-4">
-  <h2 class="mb-3 text-center">Editar Producto</h2>
-
-  <!-- Mostrar mientras carga -->
-  <div *ngIf="loading" class="text-center">
-    <p>Cargando producto...</p>
+<div class="edit-container">
+  
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <button class="btn-back" (click)="goBack()">
+        <span class="icon">←</span>
+        <span class="text">Volver</span>
+      </button>
+      <div class="header-title">
+        <span class="icon">✏️</span>
+        <h1>Editar Producto</h1>
+      </div>
+    </div>
   </div>
 
-  <!-- Formulario -->
-  <form *ngIf="!loading" [formGroup]="form" (ngSubmit)="onSubmit()" class="card p-4 shadow rounded-3">
-    <div class="mb-3">
-      <label for="name" class="form-label">Nombre</label>
-      <input
-        id="name"
-        type="text"
-        class="form-control"
-        formControlName="name"
-        placeholder="Ej: Manzana"
-      />
-    </div>
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-card">
+    <div class="spinner"></div>
+    <p>Cargando datos del producto...</p>
+  </div>
 
-    <div class="mb-3">
-      <label for="description" class="form-label">Descripción</label>
-      <input
-        id="description"
-        type="text"
-        class="form-control"
-        formControlName="description"
-        placeholder="Ej: Manzana verde"
-      />
-    </div>
+  <!-- Form Card -->
+  <div *ngIf="!loading" class="form-card">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      
+      <!-- Form Header -->
+      <div class="form-header">
+        <h2>Información del Producto</h2>
+        <p>Modifica los datos y guarda los cambios</p>
+      </div>
 
-    <div class="mb-3">
-      <label for="price" class="form-label">Precio</label>
-      <input
-        id="price"
-        type="number"
-        class="form-control"
-        formControlName="price"
-        placeholder="Ej: 4000"
-      />
-    </div>
+      <!-- Form Fields -->
+      <div class="form-body">
+        
+        <!-- Name Field -->
+        <div class="form-group">
+          <label for="name" class="form-label">
+            <span class="label-icon">📝</span>
+            <span class="label-text">Nombre del Producto</span>
+            <span class="label-required">*</span>
+          </label>
+          <input
+            id="name"
+            type="text"
+            class="form-input"
+            formControlName="name"
+            placeholder="Ej: Manzana Verde"
+          />
+          <div class="form-hint">Ingresa un nombre descriptivo para el producto</div>
+        </div>
 
-    <div class="d-flex justify-content-between mt-4">
-      <button type="button" class="btn btn-secondary" (click)="goBack()">Volver</button>
-      <button type="submit" class="btn btn-primary" [disabled]="form.invalid">
-        Guardar Cambios
-      </button>
-    </div>
-  </form>
+        <!-- Description Field -->
+        <div class="form-group">
+          <label for="description" class="form-label">
+            <span class="label-icon">📄</span>
+            <span class="label-text">Descripción</span>
+            <span class="label-required">*</span>
+          </label>
+          <textarea
+            id="description"
+            class="form-input form-textarea"
+            formControlName="description"
+            placeholder="Ej: Manzana verde fresca de la región..."
+            rows="4"
+          ></textarea>
+          <div class="form-hint">Proporciona detalles importantes del producto</div>
+        </div>
+
+        <!-- Price Field -->
+        <div class="form-group">
+          <label for="price" class="form-label">
+            <span class="label-icon">💰</span>
+            <span class="label-text">Precio</span>
+            <span class="label-required">*</span>
+          </label>
+          <div class="input-with-prefix">
+            <span class="input-prefix">$</span>
+            <input
+              id="price"
+              type="number"
+              class="form-input input-with-icon"
+              formControlName="price"
+              placeholder="0.00"
+              min="0"
+              step="0.01"
+            />
+          </div>
+          <div class="form-hint">Precio en pesos colombianos (COP)</div>
+        </div>
+
+      </div>
+
+      <!-- Form Footer -->
+      <div class="form-footer">
+        <button type="button" class="btn-cancel" (click)="goBack()">
+          <span class="btn-icon">✕</span>
+          <span class="btn-text">Cancelar</span>
+        </button>
+        <button type="submit" class="btn-submit" [disabled]="form.invalid">
+          <span class="btn-icon">✓</span>
+          <span class="btn-text">Guardar Cambios</span>
+        </button>
+      </div>
+
+    </form>
+  </div>
+
 </div>

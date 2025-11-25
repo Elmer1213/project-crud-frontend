@@ -10,6 +10,9 @@ import { ListComponent } from './pages/products/list/list.component';
 import { CreateComponent } from './pages/products/create/create.component';
 import { EditComponent } from './pages/products/edit/edit.component';
 
+//charts
+import { ChartsComponent } from './pages/products/charts/charts.component';
+
 // Excel upload
 import { ExcelUploadComponent } from './excel-upload/excel-upload.component';
 
@@ -19,14 +22,13 @@ import { ExcelUploadComponent } from './excel-upload/excel-upload.component';
     ListComponent,
     CreateComponent,
     EditComponent,
-    ExcelUploadComponent
+    ExcelUploadComponent,
+    ChartsComponent
   ],
   imports: [
-    BrowserModule,
     HttpClientModule,
     BrowserModule,
     AppRoutingModule,
-    HttpClientModule,
     FormsModule,
     ReactiveFormsModule
   ],

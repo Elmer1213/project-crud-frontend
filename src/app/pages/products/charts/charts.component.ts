@@ -3,7 +3,6 @@ import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
 import { Chart, registerables } from 'chart.js';
 import { ProductService, Product } from '../../../services/product.service';
 import { WebsocketService } from '../../../services/websocket.service';
-import { Subscription } from 'rxjs';
 
 Chart.register(...registerables);
 
@@ -17,6 +16,7 @@ export class ChartsComponent implements OnInit, OnDestroy, AfterViewInit {
   // Charts instances
   private barChart: Chart | null = null;
   private doughnutChart: Chart | null = null;
+  private progressDonutChart: Chart | null = null; // ← Añadido
 
   // Progress info from WS
   progress = 0;
@@ -46,13 +46,16 @@ export class ChartsComponent implements OnInit, OnDestroy, AfterViewInit {
       // Algunos mensajes podrían venir sin progress (por seguridad)
       if (msg?.progress !== undefined) {
         this.progress = msg.progress;
+        this.updateProgressDonut(); // ← Actualizar el donut cuando cambie el progreso
       }
       if (msg?.step) {
         this.step = msg.step;
       }
 
-      // Si el backend indica completado (por progress 100 o step 'Completado'), recargar productos
-      const completed = msg?.progress === 100 || (typeof msg?.step === 'string' && msg.step.toLowerCase().includes('complet'));
+      // Si el backend indica completado
+      const completed = msg?.progress === 100 || 
+        (typeof msg?.step === 'string' && msg.step.toLowerCase().includes('complet'));
+      
       if (completed) {
         // recargar productos y actualizar gráficas
         this.loadProductsAndRender();
@@ -62,7 +65,7 @@ export class ChartsComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnDestroy(): void {
-    // Cerrar WS (tu service tiene close())
+    // Cerrar WS
     try {
       this.wsService.close();
     } catch (e) {}
@@ -72,41 +75,39 @@ export class ChartsComponent implements OnInit, OnDestroy, AfterViewInit {
   private loadProductsAndRender(): void {
     this.productService.getProducts().subscribe({
       next: (resp: any) => {
-        // Según tu product.service, el GET devuelve build_response con data; manejar ambos casos
+        // Manejar diferentes formatos de respuesta
         const data = resp?.data ?? resp;
-        // Si la API devuelve { data: [...] } o directamente [...]
         this.products = Array.isArray(data) ? data : (data?.items ?? []);
-        // En algunos de tus endpoints `build_response` envuelve: data = jsonable_encoder(items)
-        // Si no es array, intentamos extraer más
+        
         if (!Array.isArray(this.products) && resp?.data && Array.isArray(resp.data)) {
           this.products = resp.data;
         }
-        // Si todavía no es array, intenta con resp (caso donde backend devolvió directamente array)
         if (!Array.isArray(this.products) && Array.isArray(resp)) {
           this.products = resp;
         }
 
-        // Finalmente render
+        // Renderizar todos los gráficos
         this.renderBarChart();
         this.renderDoughnutChart();
+        this.renderProgressDonut(); // ← Renderizar el donut de progreso
       },
       error: (err) => {
         console.error('Error fetching products for charts', err);
         this.products = [];
         this.renderBarChart();
         this.renderDoughnutChart();
+        this.renderProgressDonut(); // ← Incluso en error, mostrar el donut
       }
     });
   }
 
   // -- Helpers para calcular rangos --
   private computePriceRanges(): { labels: string[]; values: number[] } {
-    // Define rangos (ajusta si quieres)
     const ranges = [
-      { label: '0 - 50.000', min: 0, max: 50000 },
-      { label: '50.001 - 100.000', min: 50001, max: 100000 },
-      { label: '100.001 - 200.000', min: 100001, max: 200000 },
-      { label: '200.001+', min: 200001, max: Infinity }
+      { label: '0 - 50K', min: 0, max: 50000 },
+      { label: '50K - 100K', min: 50001, max: 100000 },
+      { label: '100K - 200K', min: 100001, max: 200000 },
+      { label: '200K+', min: 200001, max: Infinity }
     ];
 
     const counts = new Array(ranges.length).fill(0);
@@ -116,9 +117,6 @@ export class ChartsComponent implements OnInit, OnDestroy, AfterViewInit {
         if (price >= ranges[i].min && price <= ranges[i].max) {
           counts[i]++;
           break;
-        } else if (ranges[i].max === Infinity && price >= ranges[i].min) {
-          counts[i]++;
-          break;
         }
       }
     });
@@ -126,16 +124,16 @@ export class ChartsComponent implements OnInit, OnDestroy, AfterViewInit {
     return { labels: ranges.map(r => r.label), values: counts };
   }
 
+  // 📊 Gráfico de Barras
   private renderBarChart(): void {
     const { labels, values } = this.computePriceRanges();
 
-    // destruir si ya existe
     if (this.barChart) {
       this.barChart.destroy();
       this.barChart = null;
     }
 
-    const ctx = (document.getElementById('barCanvas') as HTMLCanvasElement);
+    const ctx = document.getElementById('barCanvas') as HTMLCanvasElement;
     if (!ctx) return;
 
     this.barChart = new Chart(ctx, {
@@ -143,26 +141,62 @@ export class ChartsComponent implements OnInit, OnDestroy, AfterViewInit {
       data: {
         labels,
         datasets: [{
-          label: 'Productos por rango de precio',
+          label: 'Cantidad de productos',
           data: values,
-          // colors omitted — Chart.js will use defaults (you can add backgroundColor if you want)
+          backgroundColor: 'rgba(99, 102, 241, 0.7)',
+          borderColor: 'rgba(99, 102, 241, 1)',
+          borderWidth: 2,
+          borderRadius: 8,
         }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: true,
+            position: 'top',
+            labels: {
+              font: { size: 14, weight: 600 },
+              color: '#374151'
+            }
+          },
+          tooltip: {
+            backgroundColor: 'rgba(31, 41, 55, 0.95)',
+            titleFont: { size: 14, weight: 'bold' },
+            bodyFont: { size: 13 },
+            padding: 12,
+            cornerRadius: 8
+          }
+        },
         scales: {
           y: {
             beginAtZero: true,
-            ticks: { precision: 0 }
+            ticks: { 
+              precision: 0,
+              font: { size: 12 },
+              color: '#6b7280'
+            },
+            grid: {
+              color: 'rgba(229, 231, 235, 0.5)'
+            }
+          },
+          x: {
+            ticks: {
+              font: { size: 12 },
+              color: '#6b7280'
+            },
+            grid: {
+              display: false
+            }
           }
         }
       }
     });
   }
 
+  // 🍩 Gráfico Doughnut
   private renderDoughnutChart(): void {
-    // Económicos <= 100000 ; Costosos > 100000
     const eco = this.products.filter(p => Number(p.price) <= 100000).length;
     const caro = this.products.length - eco;
 
@@ -171,29 +205,117 @@ export class ChartsComponent implements OnInit, OnDestroy, AfterViewInit {
       this.doughnutChart = null;
     }
 
-    const ctx = (document.getElementById('doughnutCanvas') as HTMLCanvasElement);
+    const ctx = document.getElementById('doughnutCanvas') as HTMLCanvasElement;
     if (!ctx) return;
 
     this.doughnutChart = new Chart(ctx, {
       type: 'doughnut',
       data: {
-        labels: ['Económicos (<=100K)', 'Costosos (>100K)'],
+        labels: ['Económicos (≤100K)', 'Costosos (>100K)'],
         datasets: [{
           data: [eco, caro],
+          backgroundColor: [
+            'rgba(16, 185, 129, 0.8)',
+            'rgba(239, 68, 68, 0.8)'
+          ],
+          borderColor: [
+            'rgba(16, 185, 129, 1)',
+            'rgba(239, 68, 68, 1)'
+          ],
+          borderWidth: 2
         }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          legend: { position: 'bottom' }
+          legend: {
+            display: true,
+            position: 'bottom',
+            labels: {
+              font: { size: 14, weight: 600 },
+              color: '#374151',
+              padding: 15
+            }
+          },
+          tooltip: {
+            backgroundColor: 'rgba(31, 41, 55, 0.95)',
+            titleFont: { size: 14, weight: 'bold' },
+            bodyFont: { size: 13 },
+            padding: 12,
+            cornerRadius: 8,
+            callbacks: {
+              label: function(context) {
+                const label = context.label || '';
+                const value = context.parsed || 0;
+                const dataset = context.dataset.data as number[];
+                const total = dataset.reduce((a, b) => a + b, 0);
+                const percentage = ((value / total) * 100).toFixed(1);
+                return `${label}: ${value} (${percentage}%)`;
+              }
+            }
+          }
         }
       }
     });
   }
 
+  // 📈 Donut de Progreso
+  private renderProgressDonut(): void {
+    const ctx = document.getElementById('progressDonut') as HTMLCanvasElement;
+    if (!ctx) return;
+
+    if (this.progressDonutChart) {
+      this.progressDonutChart.destroy();
+      this.progressDonutChart = null;
+    }
+
+    this.progressDonutChart = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        datasets: [{
+          data: [this.progress, 100 - this.progress],
+          backgroundColor: [
+            'rgba(16, 185, 129, 0.9)',
+            'rgba(229, 231, 235, 0.3)'
+          ],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        cutout: '75%',
+        plugins: {
+          legend: { display: false },
+          tooltip: { enabled: false }
+        }
+      }
+    });
+  }
+
+  // Actualizar solo el donut de progreso
+  private updateProgressDonut(): void {
+    if (this.progressDonutChart && this.progressDonutChart.data.datasets[0]) {
+      this.progressDonutChart.data.datasets[0].data = [this.progress, 100 - this.progress];
+      this.progressDonutChart.update();
+    } else {
+      this.renderProgressDonut();
+    }
+  }
+
   private destroyCharts(): void {
-    if (this.barChart) { this.barChart.destroy(); this.barChart = null; }
-    if (this.doughnutChart) { this.doughnutChart.destroy(); this.doughnutChart = null; }
+    if (this.barChart) { 
+      this.barChart.destroy(); 
+      this.barChart = null; 
+    }
+    if (this.doughnutChart) { 
+      this.doughnutChart.destroy(); 
+      this.doughnutChart = null; 
+    }
+    if (this.progressDonutChart) { 
+      this.progressDonutChart.destroy(); 
+      this.progressDonutChart = null; 
+    }
   }
 }

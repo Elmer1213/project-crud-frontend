@@ -1,95 +1,59 @@
-.container {
-  max-width: 700px;
-  margin: 50px auto;
-  background: #ffffff;
-  padding: 40px 35px;
-  border-radius: 20px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
+// 🎨 PALETA DE COLORES (consistente con los otros componentes)
+$color-primary: #6366f1;
+$color-primary-dark: #4f46e5;
+$color-primary-light: #818cf8;
+$color-secondary: #8b5cf6;
+$color-success: #10b981;
+$color-danger: #ef4444;
+$color-danger-dark: #dc2626;
 
-  &:hover {
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
-  }
+// Colores neutros
+$color-gray-50: #f9fafb;
+$color-gray-100: #f3f4f6;
+$color-gray-200: #e5e7eb;
+$color-gray-300: #d1d5db;
+$color-gray-400: #9ca3af;
+$color-gray-500: #6b7280;
+$color-gray-600: #4b5563;
+$color-gray-700: #374151;
+$color-gray-800: #1f2937;
+$color-gray-900: #111827;
 
-  h2 {
-    text-align: center;
-    font-weight: 700;
-    color: #333;
-    margin-bottom: 25px;
-    font-size: 2rem;
-    position: relative;
+$color-white: #ffffff;
+$color-bg: #f8fafc;
 
-    &::after {
-      content: '';
-      display: block;
-      width: 60px;
-      height: 4px;
-      background: linear-gradient(90deg, #007bff, #00bcd4);
-      margin: 8px auto 0;
-      border-radius: 2px;
-    }
-  }
+// Shadows
+$shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+$shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+$shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+$shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+$shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+
+// Transitions
+$transition-fast: 150ms ease-in-out;
+$transition-base: 250ms ease-in-out;
+$transition-slow: 350ms ease-in-out;
+
+// Border radius
+$radius-sm: 8px;
+$radius-md: 12px;
+$radius-lg: 16px;
+$radius-xl: 20px;
+
+// 📦 CONTENEDOR PRINCIPAL
+.create-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 32px 24px;
+  min-height: 100vh;
+  background: linear-gradient(135deg, $color-bg 0%, $color-gray-50 100%);
+  animation: fadeIn 0.4s ease-in-out;
 }
 
-/* Estilos del formulario */
-form {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-
-  .form-label {
-    font-weight: 600;
-    color: #444;
-    margin-bottom: 6px;
-  }
-
-  .form-control {
-    padding: 10px 12px;
-    border-radius: 10px;
-    border: 1px solid #ccc;
-    font-size: 1rem;
-    transition: all 0.3s ease;
-
-    &:focus {
-      outline: none;
-      border-color: #007bff;
-      box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
-    }
-  }
-
-  textarea.form-control {
-    resize: none;
-    min-height: 90px;
-  }
-
-  .btn {
-    border: none;
-    border-radius: 10px;
-    padding: 10px 18px;
-    font-weight: 600;
-    font-size: 1rem;
-    background: linear-gradient(90deg, #007bff, #00bcd4);
-    color: white;
-    cursor: pointer;
-    transition: all 0.3s ease;
-
-    &:hover {
-      transform: translateY(-2px);
-      opacity: 0.9;
-    }
-
-    &:disabled {
-      background: #ccc;
-      cursor: not-allowed;
-    }
-  }
-}
-
-/* Animación al cargar */
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
@@ -97,6 +61,420 @@ form {
   }
 }
 
-.container, form {
-  animation: fadeIn 0.4s ease-in-out;
+// 🎯 HEADER DE LA PÁGINA
+.page-header {
+  margin-bottom: 32px;
+
+  .header-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .btn-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: $color-white;
+    color: $color-gray-700;
+    border: 2px solid $color-gray-200;
+    border-radius: $radius-md;
+    font-weight: 600;
+    font-size: 0.938rem;
+    cursor: pointer;
+    transition: all $transition-base;
+    width: fit-content;
+    box-shadow: $shadow-sm;
+    text-decoration: none;
+
+    .icon {
+      font-size: 1.25rem;
+      font-weight: bold;
+    }
+
+    &:hover {
+      background: $color-gray-50;
+      border-color: $color-primary;
+      color: $color-primary;
+      transform: translateX(-4px);
+    }
+  }
+
+  .header-title {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 24px 32px;
+    background: $color-white;
+    border-radius: $radius-xl;
+    box-shadow: $shadow-lg;
+    border: 1px solid $color-gray-100;
+
+    .icon {
+      font-size: 2.5rem;
+      filter: drop-shadow(0 2px 4px rgba(99, 102, 241, 0.2));
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 2rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, $color-primary 0%, $color-secondary 100%);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.5px;
+    }
+  }
+}
+
+// 📝 FORM CARD
+.form-card {
+  background: $color-white;
+  border-radius: $radius-xl;
+  box-shadow: $shadow-xl;
+  border: 1px solid $color-gray-100;
+  overflow: hidden;
+  animation: slideUp 0.4s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// 📋 FORM SECTIONS
+.form-header {
+  padding: 32px 40px;
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-dark 100%);
+  color: $color-white;
+
+  h2 {
+    margin: 0 0 8px 0;
+    font-size: 1.75rem;
+    font-weight: 700;
+  }
+
+  p {
+    margin: 0;
+    opacity: 0.9;
+    font-size: 1rem;
+  }
+}
+
+.form-body {
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.form-footer {
+  padding: 24px 40px;
+  background: $color-gray-50;
+  border-top: 1px solid $color-gray-200;
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+}
+
+// 🎨 FORM GROUPS
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  .form-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    color: $color-gray-800;
+    font-size: 0.938rem;
+
+    .label-icon {
+      font-size: 1.25rem;
+    }
+
+    .label-text {
+      flex: 1;
+    }
+
+    .label-required {
+      color: $color-danger;
+      font-size: 1.125rem;
+    }
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid $color-gray-200;
+    border-radius: $radius-md;
+    font-size: 1rem;
+    color: $color-gray-900;
+    background: $color-white;
+    transition: all $transition-base;
+
+    &::placeholder {
+      color: $color-gray-400;
+    }
+
+    &:focus {
+      outline: none;
+      border-color: $color-primary;
+      box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+      background: $color-white;
+    }
+
+    &:disabled {
+      background: $color-gray-100;
+      cursor: not-allowed;
+    }
+  }
+
+  .form-textarea {
+    resize: vertical;
+    min-height: 120px;
+    font-family: inherit;
+    line-height: 1.6;
+  }
+
+  .form-hint {
+    font-size: 0.875rem;
+    color: $color-gray-500;
+    margin-top: 4px;
+  }
+
+  // Input con prefijo ($)
+  .input-with-prefix {
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    .input-prefix {
+      position: absolute;
+      left: 16px;
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: $color-gray-600;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .input-with-icon {
+      padding-left: 40px;
+    }
+  }
+}
+
+// 🔘 BOTONES
+.btn-cancel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: $color-white;
+  color: $color-gray-700;
+  border: 2px solid $color-gray-300;
+  border-radius: $radius-md;
+  font-weight: 600;
+  font-size: 0.938rem;
+  cursor: pointer;
+  transition: all $transition-base;
+  text-decoration: none;
+
+  .btn-icon {
+    font-size: 1.125rem;
+    font-weight: bold;
+  }
+
+  &:hover {
+    background: $color-gray-50;
+    border-color: $color-gray-400;
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.btn-submit {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 32px;
+  background: linear-gradient(135deg, $color-success 0%, #059669 100%);
+  color: $color-white;
+  border: none;
+  border-radius: $radius-md;
+  font-weight: 700;
+  font-size: 0.938rem;
+  cursor: pointer;
+  transition: all $transition-base;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+
+  .btn-icon {
+    font-size: 1.125rem;
+    font-weight: bold;
+  }
+
+  // Spinner de carga
+  .btn-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: $color-white;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+  }
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    background: linear-gradient(135deg, $color-gray-300 0%, $color-gray-400 100%);
+    cursor: not-allowed;
+    box-shadow: none;
+    opacity: 0.7;
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+// 📱 RESPONSIVE DESIGN
+@media (max-width: 768px) {
+  .create-container {
+    padding: 24px 16px;
+  }
+
+  .page-header {
+    .header-title {
+      padding: 20px 24px;
+      gap: 12px;
+
+      .icon {
+        font-size: 2rem;
+      }
+
+      h1 {
+        font-size: 1.5rem;
+      }
+    }
+  }
+
+  .form-header {
+    padding: 24px;
+
+    h2 {
+      font-size: 1.5rem;
+    }
+
+    p {
+      font-size: 0.938rem;
+    }
+  }
+
+  .form-body {
+    padding: 24px;
+    gap: 24px;
+  }
+
+  .form-footer {
+    padding: 20px 24px;
+    flex-direction: column-reverse;
+
+    button {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+
+  .form-group {
+    .form-label {
+      font-size: 0.875rem;
+
+      .label-icon {
+        font-size: 1.125rem;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .page-header {
+    .btn-back {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .header-title {
+      .icon {
+        font-size: 1.75rem;
+      }
+
+      h1 {
+        font-size: 1.25rem;
+      }
+    }
+  }
+
+  .form-header {
+    padding: 20px;
+
+    h2 {
+      font-size: 1.25rem;
+    }
+
+    p {
+      font-size: 0.875rem;
+    }
+  }
+
+  .form-body {
+    padding: 20px;
+  }
+}
+
+// 🎯 ESTADOS DE VALIDACIÓN
+.form-input {
+  &:invalid:not(:placeholder-shown) {
+    border-color: $color-danger;
+
+    &:focus {
+      box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
+    }
+  }
+
+  &:valid:not(:placeholder-shown) {
+    border-color: $color-success;
+
+    &:focus {
+      border-color: $color-primary;
+    }
+  }
+}
+
+// ✨ Animación extra al enviar
+.form-card {
+  &.submitting {
+    pointer-events: none;
+    opacity: 0.6;
+  }
 }

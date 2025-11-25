@@ -18,8 +18,8 @@ import { EditComponent } from './edit/edit.component';
   ],
   imports: [
     CommonModule,
-    ReactiveFormsModule, // ✅ agregar
-    FormsModule,         // ✅ agregar
+    ReactiveFormsModule, 
+    FormsModule,        
     ProductsRoutingModule
   ]
 })

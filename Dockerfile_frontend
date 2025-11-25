@@ -1,0 +1,22 @@
+# Angular 15 - Dockerfile estable
+FROM node:18
+
+WORKDIR /app
+
+# Copiar package.json primero (best practice)
+COPY package*.json ./
+
+# Instalar Angular CLI global
+RUN npm install -g @angular/cli@15.2.10
+
+# Instalar dependencias del proyecto
+RUN npm install --legacy-peer-deps
+
+# Copiar el resto del código
+COPY . .
+
+# Exponer el puerto
+EXPOSE 4200
+
+# Ejecutar Angular sin watcher (evita crash en Docker)
+CMD ["ng", "serve", "--host", "0.0.0.0", "--poll=2000"]

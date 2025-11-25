@@ -1,23 +1,110 @@
-<div class="container mt-5">
-  <h2>🆕 Crear Producto</h2>
-  <form (ngSubmit)="createProduct()">
-    <div class="mb-3">
-      <label class="form-label">Nombre</label>
-      <input type="text" [(ngModel)]="product.name" name="name" class="form-control" required>
+<div class="create-container">
+  
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <button class="btn-back" routerLink="/products">
+        <span class="icon">←</span>
+        <span class="text">Volver</span>
+      </button>
+      <div class="header-title">
+        <span class="icon">✨</span>
+        <h1>Crear Nuevo Producto</h1>
+      </div>
     </div>
+  </div>
 
-    <div class="mb-3">
-      <label class="form-label">Descripción</label>
-      <textarea [(ngModel)]="product.description" name="description" class="form-control" required></textarea>
-    </div>
+  <!-- Form Card -->
+  <div class="form-card">
+    <form (ngSubmit)="createProduct()">
+      
+      <!-- Form Header -->
+      <div class="form-header">
+        <h2>Información del Producto</h2>
+        <p>Completa todos los campos para agregar un nuevo producto</p>
+      </div>
 
-    <div class="mb-3">
-      <label class="form-label">Precio</label>
-      <input type="number" [(ngModel)]="product.price" name="price" class="form-control" required>
-    </div>
+      <!-- Form Body -->
+      <div class="form-body">
+        
+        <!-- Name Field -->
+        <div class="form-group">
+          <label for="name" class="form-label">
+            <span class="label-icon">📝</span>
+            <span class="label-text">Nombre del Producto</span>
+            <span class="label-required">*</span>
+          </label>
+          <input
+            id="name"
+            type="text"
+            class="form-input"
+            [(ngModel)]="product.name"
+            name="name"
+            placeholder="Ej: Manzana Verde"
+            required
+          />
+          <div class="form-hint">Ingresa un nombre descriptivo y único</div>
+        </div>
 
-    <button class="btn btn-primary" [disabled]="loading">
-      {{ loading ? 'Guardando...' : 'Guardar' }}
-    </button>
-  </form>
+        <!-- Description Field -->
+        <div class="form-group">
+          <label for="description" class="form-label">
+            <span class="label-icon">📄</span>
+            <span class="label-text">Descripción</span>
+            <span class="label-required">*</span>
+          </label>
+          <textarea
+            id="description"
+            class="form-input form-textarea"
+            [(ngModel)]="product.description"
+            name="description"
+            placeholder="Ej: Manzana verde fresca de la región, ideal para jugos y ensaladas..."
+            rows="4"
+            required
+          ></textarea>
+          <div class="form-hint">Describe las características principales del producto</div>
+        </div>
+
+        <!-- Price Field -->
+        <div class="form-group">
+          <label for="price" class="form-label">
+            <span class="label-icon">💰</span>
+            <span class="label-text">Precio</span>
+            <span class="label-required">*</span>
+          </label>
+          <div class="input-with-prefix">
+            <span class="input-prefix">$</span>
+            <input
+              id="price"
+              type="number"
+              class="form-input input-with-icon"
+              [(ngModel)]="product.price"
+              name="price"
+              placeholder="0.00"
+              min="0"
+              step="0.01"
+              required
+            />
+          </div>
+          <div class="form-hint">Precio en pesos colombianos (COP)</div>
+        </div>
+
+      </div>
+
+      <!-- Form Footer -->
+      <div class="form-footer">
+        <button type="button" class="btn-cancel" routerLink="/products">
+          <span class="btn-icon">✕</span>
+          <span class="btn-text">Cancelar</span>
+        </button>
+        <button type="submit" class="btn-submit" [disabled]="loading">
+          <span class="btn-icon" *ngIf="!loading">✓</span>
+          <span class="btn-spinner" *ngIf="loading"></span>
+          <span class="btn-text">{{ loading ? 'Guardando...' : 'Crear Producto' }}</span>
+        </button>
+      </div>
+
+    </form>
+  </div>
+
 </div>
