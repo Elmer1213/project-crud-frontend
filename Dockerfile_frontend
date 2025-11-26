@@ -6,11 +6,20 @@ WORKDIR /app
 # Copiar package.json primero (best practice)
 COPY package*.json ./
 
-# Instalar Angular CLI global
+# Instalar Angular CLI global compatible con Angular 15
 RUN npm install -g @angular/cli@15.2.10
 
-# Instalar dependencias del proyecto
+# Limpiar npm cache
+RUN npm cache clean --force
+
+# Instalar dependencias del proyecto forzando la versión correcta
 RUN npm install --legacy-peer-deps
+
+# Asegurar que NO exista @angular/build (causa del conflicto)
+RUN npm uninstall @angular/build || true
+
+# Asegurar que build-angular esté instalado
+RUN npm install --save-dev @angular-devkit/build-angular@15.2.10 --legacy-peer-deps
 
 # Copiar el resto del código
 COPY . .
@@ -18,5 +27,5 @@ COPY . .
 # Exponer el puerto
 EXPOSE 4200
 
-# Ejecutar Angular sin watcher (evita crash en Docker)
+# Ejecutar Angular
 CMD ["ng", "serve", "--host", "0.0.0.0", "--poll=2000"]
