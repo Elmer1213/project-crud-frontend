@@ -43,7 +43,7 @@ export class ListComponent implements OnInit, OnDestroy {
   }
 
   loadProducts(): void {
-    console.log('🔥 loadProducts EJECUTADO');
+    console.log('loadProducts EJECUTADO');
     this.loading = true;
     this.productService.getProducts().subscribe({
       next: (res) => {
@@ -60,7 +60,7 @@ export class ListComponent implements OnInit, OnDestroy {
 
   // ACTUALIZAR PAGINACIÓN
   updatePagination(): void {
-    console.log('🔥 updatePagination EJECUTADO');
+    console.log('updatePagination EJECUTADO');
     console.log('Products recibidos:', this.products);
 
     this.totalPages = Math.ceil(this.products.length / this.itemsPerPage);
@@ -74,7 +74,7 @@ export class ListComponent implements OnInit, OnDestroy {
     const endIndex = startIndex + this.itemsPerPage;
     this.paginatedProducts = this.products.slice(startIndex, endIndex);
 
-    // 🔥 DEBUG
+    //DEBUG
     console.log('=== PAGINACIÓN ===');
     console.log('Total productos:', this.products.length);
     console.log('Items por página:', this.itemsPerPage);
@@ -123,7 +123,7 @@ export class ListComponent implements OnInit, OnDestroy {
     if (confirm('¿Seguro que deseas eliminar este producto?')) {
       this.productService.deleteProduct(id).subscribe({
         next: () => {
-          alert('🗑️ Producto eliminado con éxito');
+          alert('Producto eliminado con éxito');
         },
         error: (err) => {
           console.error('Error al eliminar producto:', err);

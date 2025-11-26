@@ -1,4 +1,6 @@
-// 🎨 PALETA DE COLORES MODERNA
+//-------------------------
+//PALETA DE COLORES MODERNA
+//-------------------------
 $color-primary: #6366f1;        // Indigo vibrante
 $color-primary-dark: #4f46e5;   // Indigo oscuro
 $color-primary-light: #818cf8;  // Indigo claro
@@ -9,7 +11,9 @@ $color-warning: #f59e0b;        // Ámbar
 $color-danger: #ef4444;         // Rojo
 $color-danger-dark: #dc2626;    // Rojo oscuro
 
+//----------------
 // Colores neutros
+//----------------
 $color-gray-50: #f9fafb;
 $color-gray-100: #f3f4f6;
 $color-gray-200: #e5e7eb;
@@ -22,24 +26,32 @@ $color-gray-900: #111827;
 $color-white: #ffffff;
 $color-bg: #f8fafc;
 
+//---------
 // Shadows
+//---------
 $shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 $shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 $shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 $shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
 
+//------------
 // Transitions
+//------------
 $transition-fast: 150ms ease-in-out;
 $transition-base: 250ms ease-in-out;
 $transition-slow: 350ms ease-in-out;
 
+//--------------
 // Border radius
+//--------------
 $radius-sm: 8px;
 $radius-md: 12px;
 $radius-lg: 16px;
 $radius-xl: 20px;
 
-// 📦 CONTENEDOR PRINCIPAL
+//------------------------
+// CONTENEDOR PRINCIPAL
+//-----------------------
 .products-container {
   max-width: 1200px;
   margin: 0 auto;
@@ -48,7 +60,9 @@ $radius-xl: 20px;
   background: linear-gradient(135deg, $color-bg 0%, $color-gray-50 100%);
 }
 
-// 🎯 HEADER CARD
+//------------
+// HEADER CARD
+//------------
 .header-card {
   background: $color-white;
   border-radius: $radius-xl;
@@ -88,7 +102,9 @@ $radius-xl: 20px;
   }
 }
 
-// 🔘 BOTONES
+//-----------------
+//BOTONES
+//----------------
 .btn-primary {
   display: flex;
   align-items: center;
@@ -166,7 +182,9 @@ $radius-xl: 20px;
   }
 }
 
-// 📊 ESTADOS (Loading y Empty)
+//-------------------------
+//ESTADOS (Loading y Empty)
+//-------------------------
 .state-card {
   background: $color-white;
   border-radius: $radius-xl;
@@ -219,7 +237,9 @@ $radius-xl: 20px;
   to { transform: rotate(360deg); }
 }
 
-// 📋 TABLA DE PRODUCTOS
+//-------------------
+// TABLA DE PRODUCTOS
+//-------------------
 .table-card {
   background: $color-white;
   border-radius: $radius-xl;
@@ -352,7 +372,9 @@ $radius-xl: 20px;
   }
 }
 
-// 📱 RESPONSIVE DESIGN
+//------------------
+// RESPONSIVE DESIGN
+//------------------
 @media (max-width: 992px) {
   .products-container {
     padding: 24px 16px;
@@ -588,7 +610,9 @@ $radius-xl: 20px;
   }
 }
 
+//------------
 // Responsive
+//-------------
 @media (max-width: 768px) {
   .pagination-container {
     flex-direction: column;

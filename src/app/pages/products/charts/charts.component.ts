@@ -39,35 +39,37 @@ export class ChartsComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngAfterViewInit(): void {
   // 1) Cargar productos iniciales y renderizar
-    this.loadProductsAndRender();
+  this.loadProductsAndRender();
 
   // Escuchar cambios desde otros componentes
-    this.productService.productsChanged$.subscribe(() => {
-      this.loadProductsAndRender();
+  this.productService.productsChanged$.subscribe(() => {
+    this.loadProductsAndRender();
   });
-    
-    // 2) Conectar WebSocket y reaccionar a mensajes
-    this.wsService.connect((msg: any) => {
-      // Algunos mensajes podrían venir sin progress (por seguridad)
-      if (msg?.progress !== undefined) {
-        this.progress = msg.progress;
-        this.updateProgressDonut(); // ← Actualizar el donut cuando cambie el progreso
-      }
-      if (msg?.step) {
-        this.step = msg.step;
-      }
+  
+  // 2) Conectar WebSocket y reaccionar a mensajes
+  this.wsService.connect((msg: any) => {
+    // Algunos mensajes podrían venir sin progress (por seguridad)
+    if (msg?.progress !== undefined) {
+      // Animar el progreso de forma suave
+      this.animateProgress(msg.progress);
+    }
+    if (msg?.step) {
+      this.step = msg.step;
+    }
 
-      // Si el backend indica completado
-      const completed = msg?.progress === 100 || 
-        (typeof msg?.step === 'string' && msg.step.toLowerCase().includes('complet'));
-      
-      if (completed) {
-        // recargar productos y actualizar gráficas
+    // Si el backend indica completado
+    const completed = msg?.progress === 100 || 
+      (typeof msg?.step === 'string' && msg.step.toLowerCase().includes('complet'));
+    
+    if (completed) {
+      // Esperar un poco antes de recargar para que se vea el 100%
+      setTimeout(() => {
         this.loadProductsAndRender();
-      }
-    });
-    this.wsConnected = true;
-  }
+      }, 500);
+    }
+  });
+  this.wsConnected = true;
+}
 
   ngOnDestroy(): void {
     // Cerrar WS
@@ -106,6 +108,30 @@ export class ChartsComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
+  // Animar el progreso de forma suave
+  private animateProgress(targetProgress: number): void {
+  const currentProgress = this.progress;
+  const difference = targetProgress - currentProgress;
+  // Número de pasos para la animación
+  const steps = 20; 
+  const increment = difference / steps;
+  // Milisegundos entre cada paso
+  const delay = 30; 
+
+  let currentStep = 0;
+  const interval = setInterval(() => {
+    currentStep++;
+    this.progress = Math.min(currentProgress + (increment * currentStep), targetProgress);
+    this.updateProgressDonut();
+
+    if (currentStep >= steps || this.progress >= targetProgress) {
+      this.progress = targetProgress;
+      this.updateProgressDonut();
+      clearInterval(interval);
+    }
+  }, delay);
+}
+
   // -- Helpers para calcular rangos --
   private computePriceRanges(): { labels: string[]; values: number[] } {
     const ranges = [
@@ -129,7 +155,7 @@ export class ChartsComponent implements OnInit, OnDestroy, AfterViewInit {
     return { labels: ranges.map(r => r.label), values: counts };
   }
 
-  // 📊 Gráfico de Barras
+  // Gráfico de Barras
   private renderBarChart(): void {
     const { labels, values } = this.computePriceRanges();
 
@@ -200,7 +226,7 @@ export class ChartsComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  // 🍩 Gráfico Doughnut
+  // Gráfico Doughnut
   private renderDoughnutChart(): void {
     const eco = this.products.filter(p => Number(p.price) <= 100000).length;
     const caro = this.products.length - eco;
@@ -265,45 +291,50 @@ export class ChartsComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  // 📈 Donut de Progreso
+  //  Donut de Progreso
   private renderProgressDonut(): void {
-    const ctx = document.getElementById('progressDonut') as HTMLCanvasElement;
-    if (!ctx) return;
+  const ctx = document.getElementById('progressDonut') as HTMLCanvasElement;
+  if (!ctx) return;
 
-    if (this.progressDonutChart) {
-      this.progressDonutChart.destroy();
-      this.progressDonutChart = null;
-    }
-
-    this.progressDonutChart = new Chart(ctx, {
-      type: 'doughnut',
-      data: {
-        datasets: [{
-          data: [this.progress, 100 - this.progress],
-          backgroundColor: [
-            'rgba(16, 185, 129, 0.9)',
-            'rgba(229, 231, 235, 0.3)'
-          ],
-          borderWidth: 0
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: true,
-        cutout: '75%',
-        plugins: {
-          legend: { display: false },
-          tooltip: { enabled: false }
-        }
-      }
-    });
+  if (this.progressDonutChart) {
+    this.progressDonutChart.destroy();
+    this.progressDonutChart = null;
   }
+
+  this.progressDonutChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      datasets: [{
+        data: [this.progress, 100 - this.progress],
+        backgroundColor: [
+          'rgba(16, 185, 129, 0.9)',
+          'rgba(229, 231, 235, 0.3)'
+        ],
+        borderWidth: 0
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      cutout: '75%',
+      animation: {
+        animateRotate: true,
+        animateScale: true,
+        duration: 800 
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: { enabled: false }
+      }
+    }
+  });
+}
 
   // Actualizar solo el donut de progreso
   private updateProgressDonut(): void {
     if (this.progressDonutChart && this.progressDonutChart.data.datasets[0]) {
       this.progressDonutChart.data.datasets[0].data = [this.progress, 100 - this.progress];
-      this.progressDonutChart.update();
+      this.progressDonutChart.update('active');
     } else {
       this.renderProgressDonut();
     }

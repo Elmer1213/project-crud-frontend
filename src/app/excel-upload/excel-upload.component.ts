@@ -11,6 +11,15 @@ import { Chart } from 'chart.js/auto';
 })
 export class ExcelUploadComponent {
 
+  // HISTORIAL DE ARCHIVOS
+  uploadHistory: Array<{
+    fileName: string;
+    sheetName: string;
+    date: Date;
+    recordsImported: number;
+    status: 'success' | 'error';
+  }> = [];
+
   selectedFile: File | null = null;
   selectedSheet: string | null = null;
 
@@ -28,7 +37,9 @@ export class ExcelUploadComponent {
   constructor(
     private productService: ProductService,
     private wsService: WebsocketService
-  ) {}
+  ) { 
+    this.loadHistoryFromStorage();
+  }
 
   // ========================
   // Seleccionar archivo
@@ -116,6 +127,9 @@ export class ExcelUploadComponent {
     this.processingProgress = 0;
     this.processingStep = '';
 
+    const currentFileName = this.selectedFile.name;
+    const currentSheetName = this.selectedSheet;
+
     this.wsService.connect((msg) => {
       this.processingStep = msg.step;
       this.processingProgress = msg.progress;
@@ -131,13 +145,56 @@ export class ExcelUploadComponent {
           this.uploadSuccess = true;
           this.uploadProgress = 100;
 
-          // 📌 Aquí cargamos productos y dibujamos gráficos
+          // 📌 Agregar al historial
+          this.uploadHistory.unshift({
+            fileName: currentFileName,
+            sheetName: currentSheetName,
+            date: new Date(),
+            recordsImported: event.body?.count || 0,
+            status: 'success'
+          });
+
+          // Guardar en localStorage
+          this.saveHistoryToStorage();
+
           this.productService.notifyProductsChanged();
         }
       },
       error: (err) => {
         this.uploadError = err?.error?.detail || 'Error al subir el archivo.';
+
+        // Agregar error al historial
+        this.uploadHistory.unshift({
+          fileName: currentFileName,
+          sheetName: currentSheetName,
+          date: new Date(),
+          recordsImported: 0,
+          status: 'error'
+        });
+
+        this.saveHistoryToStorage();
       }
     });
+  }
+
+  //Guardar historial en localStorage
+  private saveHistoryToStorage(): void {
+    localStorage.setItem('excel_upload_history', JSON.stringify(this.uploadHistory));
+  }
+
+  //Cargar historial desde localStorage
+  private loadHistoryFromStorage(): void {
+    const saved = localStorage.getItem('excel_upload_history');
+    if (saved) {
+      this.uploadHistory = JSON.parse(saved);
+    }
+  }
+
+  // Limpiar historial
+  clearHistory(): void {
+    if (confirm('¿Estás seguro de que deseas limpiar el historial?')) {
+      this.uploadHistory = [];
+      localStorage.removeItem('excel_upload_history');
+    }
   }
 }

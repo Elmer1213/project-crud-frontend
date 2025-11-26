@@ -37,8 +37,8 @@ export class ProductService {
   }
 
   getProducts(): Observable<any> {
-    return this.http.get(this.apiUrl);
-  }
+  return this.http.get(`${this.apiUrl}?limit=20000`); 
+}
 
   getProduct(id: number): Observable<any> {
     return this.http.get(`${this.apiUrl}/${id}`);

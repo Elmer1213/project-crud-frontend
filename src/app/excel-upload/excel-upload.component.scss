@@ -239,3 +239,144 @@ canvas {
   margin: auto;
   display: block;
 }
+// ========================================
+// HISTORIAL DE IMPORTACIONES
+// ========================================
+.history-section {
+  margin-top: 40px;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.history-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.clear-history-btn {
+  padding: 8px 16px;
+  background: #ff6b6b;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.2s;
+
+  &:hover {
+    background: #fa5252;
+  }
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.history-item {
+  display: flex;
+  gap: 15px;
+  padding: 15px;
+  background: white;
+  border-radius: 10px;
+  border-left: 4px solid #51cf66;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  transition: 0.2s;
+
+  &:hover {
+    transform: translateX(5px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  }
+
+  &.error {
+    border-left-color: #ff6b6b;
+  }
+}
+
+.history-icon {
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+}
+
+.history-info {
+  flex: 1;
+}
+
+.history-file {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+
+  strong {
+    color: #333;
+    font-size: 15px;
+  }
+}
+
+.sheet-badge {
+  padding: 4px 10px;
+  background: #e7f5ff;
+  color: #1971c2;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.history-details {
+  display: flex;
+  gap: 15px;
+  font-size: 13px;
+  color: #868e96;
+}
+
+.history-date {
+  font-weight: 500;
+}
+
+.history-count {
+  color: #51cf66;
+  font-weight: 600;
+}
+
+.history-error {
+  color: #ff6b6b;
+  font-weight: 600;
+}
+
+// Responsive
+@media (max-width: 600px) {
+  .history-header {
+    flex-direction: column;
+    gap: 15px;
+    align-items: stretch;
+  }
+
+  .clear-history-btn {
+    width: 100%;
+  }
+
+  .history-item {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .history-details {
+    flex-direction: column;
+    gap: 5px;
+  }
+}

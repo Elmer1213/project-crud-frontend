@@ -95,27 +95,41 @@
     ✖ {{ uploadError }}
   </div>
 
-
-  <!-- ======================================================================= -->
-  <!-- 📊 GRÁFICAS DE PRODUCTOS (después de importación exitosa) -->
-  <!-- ======================================================================= -->
-  <div *ngIf="uploadSuccess" class="charts-section">
-
-    <h2 class="chart-title">📊 Estadísticas de Productos Importados</h2>
-
-    <!-- GRÁFICA DE BARRAS -->
-    <div class="chart-box">
-      <h3>Precios por Producto (Barras)</h3>
-      <canvas id="barChartCanvas"></canvas>
-    </div>
-
-    <!-- GRÁFICA DOUGHNUT -->
-    <div class="chart-box">
-      <h3>Distribución de Precios (Doughnut)</h3>
-      <canvas id="doughnutChartCanvas"></canvas>
-    </div>
-
   </div>
+  <!-- ======================================================================= -->
+  <!-- HISTORIAL DE ARCHIVOS SUBIDOS -->
+  <!-- ======================================================================= -->
+  <div *ngIf="uploadHistory.length > 0" class="history-section">
+    <div class="history-header">
+    <h2 class="history-title">Historial de Importaciones</h2>
+    <button class="clear-history-btn" (click)="clearHistory()">Limpiar</button>
+  </div>
+
+  <div class="history-list">
+    <div *ngFor="let item of uploadHistory" class="history-item" [class.error]="item.status === 'error'">
+      <div class="history-icon">
+        <span *ngIf="item.status === 'success'"></span>
+        <span *ngIf="item.status === 'error'"></span>
+      </div>
+      
+      <div class="history-info">
+        <div class="history-file">
+          <strong>{{ item.fileName }}</strong>
+          <span class="sheet-badge">{{ item.sheetName }}</span>
+        </div>
+        <div class="history-details">
+          <span class="history-date">{{ item.date | date:'short' }}</span>
+          <span *ngIf="item.status === 'success'" class="history-count">
+            {{ item.recordsImported }} registros
+          </span>
+          <span *ngIf="item.status === 'error'" class="history-error">
+            Error en la importación
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 </div>
 
