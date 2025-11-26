@@ -21,6 +21,9 @@ RUN npm uninstall @angular/build || true
 # Asegurar que build-angular esté instalado
 RUN npm install --save-dev @angular-devkit/build-angular@15.2.10 --legacy-peer-deps
 
+# Instalar tipos faltantes para eliminar errores de TypeScript
+RUN npm install --save-dev @types/body-parser @types/bonjour @types/connect @types/connect-history-api-fallback @types/cors @types/eslint @types/eslint-scope @types/estree --legacy-peer-deps
+
 # Copiar el resto del código
 COPY . .
 
