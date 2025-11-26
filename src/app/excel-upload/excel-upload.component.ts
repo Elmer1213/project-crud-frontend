@@ -25,10 +25,6 @@ export class ExcelUploadComponent {
   processingProgress = 0;
   processingStep = '';
 
-  // Charts
-  barChart: any;
-  doughnutChart: any;
-
   constructor(
     private productService: ProductService,
     private wsService: WebsocketService
@@ -136,7 +132,7 @@ export class ExcelUploadComponent {
           this.uploadProgress = 100;
 
           // 📌 Aquí cargamos productos y dibujamos gráficos
-          this.loadProductsForCharts();
+          this.productService.notifyProductsChanged();
         }
       },
       error: (err) => {
@@ -144,51 +140,4 @@ export class ExcelUploadComponent {
       }
     });
   }
-
-  // ========================
-  // 📊 Cargar productos y armar gráficas
-  // ========================
-  loadProductsForCharts() {
-    this.productService.getProducts().subscribe({
-      next: (resp) => {
-        const products = resp.data ?? resp;
-
-        const labels = products.map((p: any) => p.name);
-        const prices = products.map((p: any) => p.price);
-
-        this.renderBarChart(labels, prices);
-        this.renderDoughnutChart(labels, prices);
-      }
-    });
-  }
-
-  renderBarChart(labels: string[], data: number[]) {
-    if (this.barChart) this.barChart.destroy();
-
-    this.barChart = new Chart('barChartCanvas', {
-      type: 'bar',
-      data: {
-        labels,
-        datasets: [
-          { label: 'Precio del producto', data }
-        ]
-      }
-    });
-  }
-
-  renderDoughnutChart(labels: string[], data: number[]) {
-    if (this.doughnutChart) this.doughnutChart.destroy();
-
-    this.doughnutChart = new Chart('doughnutChartCanvas', {
-      type: 'doughnut',
-      data: {
-        labels,
-        datasets: [
-          { label: 'Distribución de precios', data }
-        ]
-      }
-    });
-  }
 }
-
-

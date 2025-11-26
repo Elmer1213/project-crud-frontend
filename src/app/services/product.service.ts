@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpEvent, HttpRequest } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
+import { tap } from 'rxjs/operators';
 
 export interface Product {
   id?: number;
@@ -20,7 +21,20 @@ export class ProductService {
   private readonly excelPreviewUrl = 'http://localhost:8000/excel/preview';
   private readonly excelImportUrl = 'http://localhost:8000/excel/import';
 
+  //-------------------------------
+  // Subject para notificar cambios
+  //-------------------------------
+  private productsChanged = new Subject<void>();
+  public productsChanged$ = this.productsChanged.asObservable();
+
   constructor(private http: HttpClient) {}
+
+  //--------------------------------------
+  //Metodo para notificar que hubo cambios
+  //--------------------------------------
+  notifyProductsChanged(): void {
+    this.productsChanged.next();
+  }
 
   getProducts(): Observable<any> {
     return this.http.get(this.apiUrl);
@@ -31,15 +45,21 @@ export class ProductService {
   }
 
   createProduct(data: Partial<Product>): Observable<any> {
-    return this.http.post(this.apiUrl, data);
+    return this.http.post(this.apiUrl, data).pipe(
+      tap(() => this.notifyProductsChanged())
+    );
   }
 
   updateProduct(id: number, data: Partial<Product>): Observable<any> {
-    return this.http.put(`${this.apiUrl}/${id}`, data);
+    return this.http.put(`${this.apiUrl}/${id}`, data).pipe(
+      tap(() => this.notifyProductsChanged())
+    );
   }
 
   deleteProduct(id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${id}`);
+    return this.http.delete(`${this.apiUrl}/${id}`).pipe(
+      tap(() => this.notifyProductsChanged())
+    );
   }
 
   // -------------------------

@@ -42,7 +42,8 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let p of products" class="product-row">
+          <!-- 🔥 CAMBIO: usar paginatedProducts en lugar de products -->
+          <tr *ngFor="let p of paginatedProducts" class="product-row">
             <td data-label="ID" class="cell-id">
               <span class="id-badge">{{ p.id }}</span>
             </td>
@@ -74,6 +75,76 @@
         </tbody>
       </table>
     </div>
+
+    <!-- 🔥 NUEVO: PAGINACIÓN -->
+    <div class="pagination-container">
+      <!-- Info de registros -->
+      <div class="pagination-info">
+        <span class="records-info">
+          Mostrando {{ (currentPage - 1) * itemsPerPage + 1 }} - 
+          {{ Math.min(currentPage * itemsPerPage, products.length) }} 
+          de {{ products.length }} productos
+        </span>
+        
+        <select 
+          [value]="itemsPerPage" 
+          (change)="onItemsPerPageChange($event)" 
+          class="items-per-page-select">
+          <option *ngFor="let option of itemsPerPageOptions" [value]="option">
+            {{ option }} por página
+          </option>
+        </select>
+      </div>
+
+      <!-- Controles de paginación -->
+      <div class="pagination-controls">
+        <!-- Primera página -->
+        <button 
+          (click)="goToPage(1)" 
+          [disabled]="currentPage === 1"
+          class="pagination-btn"
+          title="Primera página">
+          ⏮️
+        </button>
+        
+        <!-- Página anterior -->
+        <button 
+          (click)="goToPage(currentPage - 1)" 
+          [disabled]="currentPage === 1"
+          class="pagination-btn"
+          title="Anterior">
+          ◀️
+        </button>
+
+        <!-- Números de página -->
+        <button 
+          *ngFor="let page of getPageNumbers()"
+          (click)="goToPage(page)"
+          [class.active]="page === currentPage"
+          class="pagination-btn page-number">
+          {{ page }}
+        </button>
+
+        <!-- Página siguiente -->
+        <button 
+          (click)="goToPage(currentPage + 1)" 
+          [disabled]="currentPage === totalPages"
+          class="pagination-btn"
+          title="Siguiente">
+          ▶️
+        </button>
+        
+        <!-- Última página -->
+        <button 
+          (click)="goToPage(totalPages)" 
+          [disabled]="currentPage === totalPages"
+          class="pagination-btn"
+          title="Última página">
+          ⏭️
+        </button>
+      </div>
+    </div>
+
   </div>
 
 </div>

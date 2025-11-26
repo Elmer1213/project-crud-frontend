@@ -38,9 +38,14 @@ export class ChartsComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    // 1) Cargar productos iniciales y renderizar
+  // 1) Cargar productos iniciales y renderizar
     this.loadProductsAndRender();
 
+  // Escuchar cambios desde otros componentes
+    this.productService.productsChanged$.subscribe(() => {
+      this.loadProductsAndRender();
+  });
+    
     // 2) Conectar WebSocket y reaccionar a mensajes
     this.wsService.connect((msg: any) => {
       // Algunos mensajes podrían venir sin progress (por seguridad)
