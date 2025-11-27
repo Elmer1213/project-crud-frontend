@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ProductService } from '../services/product.service';
 import { HttpEventType } from '@angular/common/http';
 import { WebsocketService } from '../services/websocket.service';
@@ -9,7 +9,7 @@ import { Chart } from 'chart.js/auto';
   templateUrl: './excel-upload.component.html',
   styleUrls: ['./excel-upload.component.scss']
 })
-export class ExcelUploadComponent {
+export class ExcelUploadComponent implements OnInit {
 
   // HISTORIAL DE ARCHIVOS
   uploadHistory: Array<{
@@ -29,6 +29,7 @@ export class ExcelUploadComponent {
 
   uploadSuccess = false;
   uploadError: string | null = null;
+  duplicateWarning: string | null = null;
 
   uploadProgress = 0;
   processingProgress = 0;
@@ -39,6 +40,10 @@ export class ExcelUploadComponent {
     private wsService: WebsocketService
   ) { 
     this.loadHistoryFromStorage();
+  }
+
+  ngOnInit(): void {
+    // Inicialización del componente
   }
 
   // ========================
@@ -61,6 +66,7 @@ export class ExcelUploadComponent {
     this.selectedFile = file;
     this.uploadError = null;
     this.uploadSuccess = false;
+    this.duplicateWarning = null;
     this.previewData = [];
     this.displayedColumns = [];
     this.uploadProgress = 0;
@@ -77,7 +83,7 @@ export class ExcelUploadComponent {
     if (!this.selectedFile) return;
 
     this.productService.getExcelSheets(this.selectedFile).subscribe({
-      next: (response) => {
+      next: (response: any) => {
         this.sheets = response.sheets;
       },
       error: () => {
@@ -95,8 +101,11 @@ export class ExcelUploadComponent {
       return;
     }
 
+    //Verificar duplicados al previsualizar
+    this.checkForDuplicates();
+
     this.productService.previewSheet(this.selectedFile, this.selectedSheet).subscribe({
-      next: (response) => {
+      next: (response: any) => {
         this.previewData = response.preview;
         this.displayedColumns =
           this.previewData.length > 0 ? Object.keys(this.previewData[0]) : [];
@@ -105,6 +114,40 @@ export class ExcelUploadComponent {
         this.uploadError = "Error al previsualizar la hoja.";
       }
     });
+  }
+
+  // ========================
+  //VERIFICAR DUPLICADOS
+  // ========================
+  private checkForDuplicates(): void {
+    if (!this.selectedFile || !this.selectedSheet) return;
+
+    const isDuplicate = this.uploadHistory.some(
+      (record) =>
+        record.fileName === this.selectedFile!.name &&
+        record.sheetName === this.selectedSheet &&
+        record.status === 'success'
+    );
+
+    if (isDuplicate) {
+      this.duplicateWarning = `⚠️ Ya existe un registro exitoso de "${this.selectedFile.name}" - hoja "${this.selectedSheet}".`;
+    } else {
+      this.duplicateWarning = null;
+    }
+  }
+
+  // ========================
+  // VALIDAR ANTES DE IMPORTAR
+  // ========================
+  private isDuplicateUpload(): boolean {
+    if (!this.selectedFile || !this.selectedSheet) return false;
+
+    return this.uploadHistory.some(
+      (record) =>
+        record.fileName === this.selectedFile!.name &&
+        record.sheetName === this.selectedSheet &&
+        record.status === 'success'
+    );
   }
 
   // ========================
@@ -121,8 +164,21 @@ export class ExcelUploadComponent {
       return;
     }
 
+    //VALIDAR DUPLICADO ANTES DE SUBIR
+    if (this.isDuplicateUpload()) {
+      const userConfirmed = confirm(
+        `El archivo "${this.selectedFile.name}" con la hoja "${this.selectedSheet}" ya fue importado exitosamente.\n\n¿Deseas importarlo nuevamente?`
+      );
+
+      if (!userConfirmed) {
+        this.uploadError = 'Importación cancelada: archivo duplicado.';
+        return;
+      }
+    }
+
     this.uploadError = null;
     this.uploadSuccess = false;
+    this.duplicateWarning = null;
     this.uploadProgress = 0;
     this.processingProgress = 0;
     this.processingStep = '';
@@ -130,13 +186,13 @@ export class ExcelUploadComponent {
     const currentFileName = this.selectedFile.name;
     const currentSheetName = this.selectedSheet;
 
-    this.wsService.connect((msg) => {
+    this.wsService.connect((msg: any) => {
       this.processingStep = msg.step;
       this.processingProgress = msg.progress;
     });
 
     this.productService.uploadExcel(this.selectedFile, this.selectedSheet).subscribe({
-      next: (event) => {
+      next: (event: any) => {
         if (event.type === HttpEventType.UploadProgress && event.total) {
           this.uploadProgress = Math.round((event.loaded * 100) / event.total);
         }
@@ -160,7 +216,7 @@ export class ExcelUploadComponent {
           this.productService.notifyProductsChanged();
         }
       },
-      error: (err) => {
+      error: (err: any) => {
         this.uploadError = err?.error?.detail || 'Error al subir el archivo.';
 
         // Agregar error al historial
@@ -177,12 +233,12 @@ export class ExcelUploadComponent {
     });
   }
 
-  //Guardar historial en localStorage
+  // Guardar historial en localStorage
   private saveHistoryToStorage(): void {
     localStorage.setItem('excel_upload_history', JSON.stringify(this.uploadHistory));
   }
 
-  //Cargar historial desde localStorage
+  // Cargar historial desde localStorage
   private loadHistoryFromStorage(): void {
     const saved = localStorage.getItem('excel_upload_history');
     if (saved) {
@@ -195,6 +251,7 @@ export class ExcelUploadComponent {
     if (confirm('¿Estás seguro de que deseas limpiar el historial?')) {
       this.uploadHistory = [];
       localStorage.removeItem('excel_upload_history');
+      this.duplicateWarning = null;
     }
   }
 }

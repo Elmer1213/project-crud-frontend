@@ -152,7 +152,10 @@
   }
 }
 
-/* Mensajes */
+/* ============================= */
+/*   MENSAJES DE ESTADO         */
+/* ============================= */
+
 .success-msg {
   margin-top: 20px;
   padding: 12px;
@@ -169,6 +172,28 @@
   color: #c92a2a;
   border-radius: 8px;
   font-weight: 500;
+}
+
+// NUEVO: Mensaje de advertencia para duplicados
+.warning-msg {
+  margin-top: 20px;
+  padding: 12px 16px;
+  background: #fff3cd;
+  border-left: 4px solid #ffc107;
+  color: #856404;
+  border-radius: 8px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  text-align: left;
+
+  &::before {
+    content: "⚠️";
+    margin-right: 10px;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
 }
 
 /* ============================ */
@@ -220,6 +245,7 @@
 .preview-table tr:hover {
   background: #e9ecef;
 }
+
 .charts-section {
   margin-top: 30px;
   padding: 20px;
@@ -239,6 +265,7 @@ canvas {
   margin: auto;
   display: block;
 }
+
 // ========================================
 // HISTORIAL DE IMPORTACIONES
 // ========================================

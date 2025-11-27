@@ -36,6 +36,11 @@
     Vista previa de la hoja
   </button>
 
+  <!--ADVERTENCIA DE DUPLICADO -->
+  <div *ngIf="duplicateWarning" class="warning-msg">
+    {{ duplicateWarning }}
+  </div>
+
   <!-- TABLA DE VISTA PREVIA -->
   <div *ngIf="previewData && previewData.length > 0" class="preview-table-box">
     <h3 class="preview-title">Vista previa (primeras 10 filas)</h3>
