@@ -27,18 +27,12 @@
   </div>
 
   <!-- BOTÓN PARA CARGAR HOJAS -->
-  <button
-    *ngIf="selectedFile && sheets.length === 0"
-    class="load-sheets-btn"
-    (click)="loadSheets()">
+  <button *ngIf="selectedFile && sheets.length === 0" class="load-sheets-btn" (click)="loadSheets()">
     Cargar hojas del archivo
   </button>
 
   <!-- BOTÓN PARA MOSTRAR VISTA PREVIA -->
-  <button
-    *ngIf="selectedSheet"
-    class="preview-btn"
-    (click)="previewSheet()">
+  <button *ngIf="selectedSheet" class="preview-btn" (click)="previewSheet()">
     Vista previa de la hoja
   </button>
 
@@ -78,9 +72,7 @@
   </div>
 
   <!-- BOTÓN SUBIR -->
-  <button 
-    class="upload-btn" 
-    (click)="uploadFile()"
+  <button class="upload-btn" (click)="uploadFile()"
     [disabled]="!selectedFile || !selectedSheet || (uploadProgress > 0 && uploadProgress < 100)">
     Subir Archivo
   </button>
@@ -95,43 +87,39 @@
     ✖ {{ uploadError }}
   </div>
 
-  </div>
   <!-- ======================================================================= -->
   <!-- HISTORIAL DE ARCHIVOS SUBIDOS -->
   <!-- ======================================================================= -->
   <div *ngIf="uploadHistory.length > 0" class="history-section">
     <div class="history-header">
-    <h2 class="history-title">Historial de Importaciones</h2>
-    <button class="clear-history-btn" (click)="clearHistory()">Limpiar</button>
-  </div>
+      <h2 class="history-title">Historial de Importaciones</h2>
+      <button class="clear-history-btn" (click)="clearHistory()">Limpiar</button>
+    </div>
 
-  <div class="history-list">
-    <div *ngFor="let item of uploadHistory" class="history-item" [class.error]="item.status === 'error'">
-      <div class="history-icon">
-        <span *ngIf="item.status === 'success'"></span>
-        <span *ngIf="item.status === 'error'"></span>
-      </div>
-      
-      <div class="history-info">
-        <div class="history-file">
-          <strong>{{ item.fileName }}</strong>
-          <span class="sheet-badge">{{ item.sheetName }}</span>
+    <div class="history-list">
+      <div *ngFor="let item of uploadHistory" class="history-item" [class.error]="item.status === 'error'">
+        <div class="history-icon">
+          <span *ngIf="item.status === 'success'">📄</span>
+          <span *ngIf="item.status === 'error'">❌</span>
         </div>
-        <div class="history-details">
-          <span class="history-date">{{ item.date | date:'short' }}</span>
-          <span *ngIf="item.status === 'success'" class="history-count">
-            {{ item.recordsImported }} registros
-          </span>
-          <span *ngIf="item.status === 'error'" class="history-error">
-            Error en la importación
-          </span>
+
+        <div class="history-info">
+          <div class="history-file">
+            <strong>{{ item.fileName }}</strong>
+            <span class="sheet-badge">{{ item.sheetName }}</span>
+          </div>
+          <div class="history-details">
+            <span class="history-date">{{ item.date | date:'short' }}</span>
+            <span *ngIf="item.status === 'success'" class="history-count">
+              {{ item.recordsImported }} registros
+            </span>
+            <span *ngIf="item.status === 'error'" class="history-error">
+              Error en la importación
+            </span>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 
 </div>
-
-
-
