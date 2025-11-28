@@ -1,9 +1,9 @@
-# Angular 15 - Dockerfile estable
-FROM node:18
+# Angular 15 - Dockerfile optimizado
+FROM node:18-alpine
 
 WORKDIR /app
 
-# Copiar package.json primero (best practice)
+# Copiar archivos de configuración de npm
 COPY package*.json ./
 
 # Instalar Angular CLI global compatible con Angular 15
@@ -12,23 +12,36 @@ RUN npm install -g @angular/cli@15.2.10
 # Limpiar npm cache
 RUN npm cache clean --force
 
-# Instalar dependencias del proyecto forzando la versión correcta
+# Instalar dependencias del proyecto
 RUN npm install --legacy-peer-deps
 
-# Asegurar que NO exista @angular/build (causa del conflicto)
-RUN npm uninstall @angular/build || true
+# Asegurar que NO exista @angular/build
+RUN npm uninstall @angular/build 2>/dev/null || true
 
 # Asegurar que build-angular esté instalado
 RUN npm install --save-dev @angular-devkit/build-angular@15.2.10 --legacy-peer-deps
 
-# Instalar tipos faltantes para eliminar errores de TypeScript
-RUN npm install --save-dev @types/body-parser @types/bonjour @types/connect @types/connect-history-api-fallback @types/cors @types/eslint @types/eslint-scope @types/estree --legacy-peer-deps
+# Instalar tipos faltantes
+RUN npm install --save-dev \
+    @types/body-parser \
+    @types/bonjour \
+    @types/connect \
+    @types/connect-history-api-fallback \
+    @types/cors \
+    @types/eslint \
+    @types/eslint-scope \
+    @types/estree \
+    --legacy-peer-deps
 
-# Copiar el resto del código
+# Copiar archivos de configuración de TypeScript y Angular
+COPY tsconfig*.json ./
+COPY angular.json ./
+
+# Copiar el resto del código fuente
 COPY . .
 
-# Exponer el puerto
+# Exponer puerto
 EXPOSE 4200
 
-# Ejecutar Angular
-CMD ["ng", "serve", "--host", "0.0.0.0", "--poll=2000"]
+# Comando de inicio
+CMD ["ng", "serve", "--host", "0.0.0.0", "--poll", "500"]
