@@ -101,7 +101,11 @@ export class ExcelUploadComponent implements OnInit {
       return;
     }
 
-    //Verificar duplicados al previsualizar
+    // Limpiar mensajes previos
+    this.uploadError = null;
+    this.uploadSuccess = false;
+
+    // ✅ Verificar duplicados al previsualizar
     this.checkForDuplicates();
 
     this.productService.previewSheet(this.selectedFile, this.selectedSheet).subscribe({
@@ -117,7 +121,7 @@ export class ExcelUploadComponent implements OnInit {
   }
 
   // ========================
-  //VERIFICAR DUPLICADOS
+  // ✅ VERIFICAR DUPLICADOS
   // ========================
   private checkForDuplicates(): void {
     if (!this.selectedFile || !this.selectedSheet) return;
@@ -137,7 +141,7 @@ export class ExcelUploadComponent implements OnInit {
   }
 
   // ========================
-  // VALIDAR ANTES DE IMPORTAR
+  // ✅ VALIDAR ANTES DE IMPORTAR
   // ========================
   private isDuplicateUpload(): boolean {
     if (!this.selectedFile || !this.selectedSheet) return false;
@@ -154,84 +158,97 @@ export class ExcelUploadComponent implements OnInit {
   // Importar Excel + WebSocket
   // ========================
   uploadFile(): void {
-    if (!this.selectedFile) {
-      this.uploadError = 'No seleccionaste un archivo.';
+  if (!this.selectedFile) {
+    this.uploadError = 'No seleccionaste un archivo.';
+    return;
+  }
+
+  if (!this.selectedSheet) {
+    this.uploadError = 'Debes seleccionar una hoja.';
+    return;
+  }
+
+  // ✅ VALIDAR DUPLICADO ANTES DE SUBIR
+  if (this.isDuplicateUpload()) {
+    const userConfirmed = confirm(
+      `El archivo "${this.selectedFile.name}" con la hoja "${this.selectedSheet}" ya fue importado exitosamente.\n\n¿Deseas importarlo nuevamente?`
+    );
+
+    if (!userConfirmed) {
+      this.uploadError = 'Importación cancelada: archivo duplicado.';
       return;
     }
+  }
 
-    if (!this.selectedSheet) {
-      this.uploadError = 'Debes seleccionar una hoja.';
-      return;
-    }
+  this.uploadError = null;
+  this.uploadSuccess = false;
+  this.duplicateWarning = null;
+  this.uploadProgress = 0;
+  this.processingProgress = 0;
+  this.processingStep = '';
 
-    //VALIDAR DUPLICADO ANTES DE SUBIR
-    if (this.isDuplicateUpload()) {
-      const userConfirmed = confirm(
-        `El archivo "${this.selectedFile.name}" con la hoja "${this.selectedSheet}" ya fue importado exitosamente.\n\n¿Deseas importarlo nuevamente?`
-      );
+  const currentFileName = this.selectedFile.name;
+  const currentSheetName = this.selectedSheet;
 
-      if (!userConfirmed) {
-        this.uploadError = 'Importación cancelada: archivo duplicado.';
-        return;
-      }
-    }
+  console.log('🚀 Iniciando subida:', currentFileName, currentSheetName);
 
-    this.uploadError = null;
-    this.uploadSuccess = false;
-    this.duplicateWarning = null;
-    this.uploadProgress = 0;
-    this.processingProgress = 0;
-    this.processingStep = '';
-
-    const currentFileName = this.selectedFile.name;
-    const currentSheetName = this.selectedSheet;
-
+  // Conectar WebSocket solo si está disponible
+  try {
     this.wsService.connect((msg: any) => {
       this.processingStep = msg.step;
       this.processingProgress = msg.progress;
     });
+  } catch (error) {
+    console.warn('WebSocket no disponible');
+  }
 
-    this.productService.uploadExcel(this.selectedFile, this.selectedSheet).subscribe({
-      next: (event: any) => {
-        if (event.type === HttpEventType.UploadProgress && event.total) {
-          this.uploadProgress = Math.round((event.loaded * 100) / event.total);
-        }
+  this.productService.uploadExcel(this.selectedFile, this.selectedSheet).subscribe({
+    next: (event: any) => {
+      console.log('📥 Evento recibido:', event);
 
-        if (event.type === HttpEventType.Response) {
-          this.uploadSuccess = true;
-          this.uploadProgress = 100;
+      if (event.type === HttpEventType.UploadProgress && event.total) {
+        this.uploadProgress = Math.round((event.loaded * 100) / event.total);
+        console.log('⏳ Progreso:', this.uploadProgress + '%');
+      }
 
-          // 📌 Agregar al historial
-          this.uploadHistory.unshift({
-            fileName: currentFileName,
-            sheetName: currentSheetName,
-            date: new Date(),
-            recordsImported: event.body?.count || 0,
-            status: 'success'
-          });
+      if (event.type === HttpEventType.Response) {
+        console.log('✅ Respuesta completa del backend:', event.body);
 
-          // Guardar en localStorage
-          this.saveHistoryToStorage();
+        const recordCount = event.body?.data?.count || event.body?.count || 0;
+        console.log('📊 Registros importados:', recordCount);
+        
+        this.uploadSuccess = true;
+        this.uploadProgress = 100;
 
-          this.productService.notifyProductsChanged();
-        }
-      },
-      error: (err: any) => {
-        this.uploadError = err?.error?.detail || 'Error al subir el archivo.';
-
-        // Agregar error al historial
+        // 📌 Agregar al historial solo si fue exitoso
         this.uploadHistory.unshift({
           fileName: currentFileName,
           sheetName: currentSheetName,
           date: new Date(),
-          recordsImported: 0,
-          status: 'error'
+          recordsImported: recordCount,
+          status: 'success'
         });
 
         this.saveHistoryToStorage();
+        this.productService.notifyProductsChanged();
       }
-    });
-  }
+    },
+    error: (err: any) => {
+      console.error('❌ Error completo:', err);
+      this.uploadError = err?.error?.detail || 'Error al subir el archivo.';
+
+      this.uploadHistory.unshift({
+        fileName: currentFileName,
+        sheetName: currentSheetName,
+        date: new Date(),
+        recordsImported: 0,
+        status: 'error'
+      });
+
+      this.saveHistoryToStorage();
+    }
+  });
+}
 
   // Guardar historial en localStorage
   private saveHistoryToStorage(): void {
