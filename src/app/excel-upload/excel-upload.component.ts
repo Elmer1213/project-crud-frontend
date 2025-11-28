@@ -121,7 +121,7 @@ export class ExcelUploadComponent implements OnInit {
   }
 
   // ========================
-  // ✅ VERIFICAR DUPLICADOS
+  // VERIFICAR DUPLICADOS
   // ========================
   private checkForDuplicates(): void {
     if (!this.selectedFile || !this.selectedSheet) return;
@@ -141,7 +141,7 @@ export class ExcelUploadComponent implements OnInit {
   }
 
   // ========================
-  // ✅ VALIDAR ANTES DE IMPORTAR
+  // VALIDAR ANTES DE IMPORTAR
   // ========================
   private isDuplicateUpload(): boolean {
     if (!this.selectedFile || !this.selectedSheet) return false;
@@ -168,7 +168,7 @@ export class ExcelUploadComponent implements OnInit {
     return;
   }
 
-  // ✅ VALIDAR DUPLICADO ANTES DE SUBIR
+  // VALIDAR DUPLICADO ANTES DE SUBIR
   if (this.isDuplicateUpload()) {
     const userConfirmed = confirm(
       `El archivo "${this.selectedFile.name}" con la hoja "${this.selectedSheet}" ya fue importado exitosamente.\n\n¿Deseas importarlo nuevamente?`

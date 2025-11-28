@@ -8,11 +8,20 @@ export class WebsocketService {
   private socket: WebSocket | null = null;
 
   connect(onMessage: (msg: any) => void) {
-    this.socket = new WebSocket("ws://localhost:8000/ws/excel");
+    // Importante: ruta correcta según tu backend
+    this.socket = new WebSocket("ws://localhost:8000/excel-progress");
+
+    this.socket.onopen = () => {
+      console.log("WebSocket conectado");
+    };
 
     this.socket.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      onMessage(data);
+      try {
+        const data = JSON.parse(event.data);
+        onMessage(data);
+      } catch (err) {
+        console.warn("Mensaje no válido del servidor:", event.data);
+      }
     };
 
     this.socket.onerror = () => {

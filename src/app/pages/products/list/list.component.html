@@ -14,6 +14,114 @@
     </div>
   </div>
 
+  <!-- Barra de Filtros -->
+  <div *ngIf="!loading && products.length > 0" class="filters-card">
+
+    <!-- Búsqueda -->
+    <div class="search-container">
+      <div class="search-input-wrapper">
+        <span class="search-icon">🔍</span>
+        <input 
+          type="text" 
+          class="search-input"
+          placeholder="Buscar por nombre o descripción..."
+          [value]="searchTerm"
+          (input)="onSearch($event)">
+
+        <!-- Botón limpiar búsqueda -->
+        <button 
+          *ngIf="searchTerm" 
+          class="clear-search-btn"
+          (click)="clearSearch()"
+          title="Limpiar búsqueda">
+          ✕
+        </button>
+      </div>
+    </div>
+
+    <!-- Botones de Ordenamiento -->
+    <div class="sort-buttons-container">
+      <span class="sort-label">Ordenar por:</span>
+      
+      <div class="sort-buttons">
+
+        <!-- Ordenar por Nombre a-Z -->
+        <button 
+          class="sort-btn"
+          [class.active]="currentSort === 'name-asc'"
+          (click)="applySorting('name-asc')"
+          title="Nombre A-Z">
+          <span class="sort-icon">🔤</span>
+          <span class="sort-text">A → Z</span>
+        </button>
+
+        <button 
+          class="sort-btn"
+          [class.active]="currentSort === 'name-desc'"
+          (click)="applySorting('name-desc')"
+          title="Nombre Z-A">
+          <span class="sort-icon">🔤</span>
+          <span class="sort-text">Z → A</span>
+        </button>
+
+        <!-- Ordenar por Precio -->
+        <button 
+          class="sort-btn"
+          [class.active]="currentSort === 'price-asc'"
+          (click)="applySorting('price-asc')"
+          title="Precio menor a mayor">
+          <span class="sort-icon">💲</span>
+          <span class="sort-text">$ ↑</span>
+        </button>
+
+        <button 
+          class="sort-btn"
+          [class.active]="currentSort === 'price-desc'"
+          (click)="applySorting('price-desc')"
+          title="Precio mayor a menor">
+          <span class="sort-icon">💲</span>
+          <span class="sort-text">$ ↓</span>
+        </button>
+
+        <!-- Ordenar por Fecha -->
+        <button 
+          class="sort-btn"
+          [class.active]="currentSort === 'date-asc'"
+          (click)="applySorting('date-asc')"
+          title="Más antiguos primero">
+          <span class="sort-icon">📅</span>
+          <span class="sort-text">↑ Antiguo</span>
+        </button>
+
+        <button 
+          class="sort-btn"
+          [class.active]="currentSort === 'date-desc'"
+          (click)="applySorting('date-desc')"
+          title="Más recientes primero">
+          <span class="sort-icon">📅</span>
+          <span class="sort-text">↓ Reciente</span>
+        </button>
+
+        <!-- Limpiar Filtros -->
+        <button 
+          class="sort-btn clear-btn"
+          (click)="clearFilters()"
+          *ngIf="searchTerm || currentSort !== 'none'"
+          title="Limpiar filtros">
+          <span class="sort-icon">🔄</span>
+          <span class="sort-text">Limpiar</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Contador de resultados -->
+    <div class="results-counter" *ngIf="searchTerm || currentSort !== 'none'">
+      <span class="counter-text">
+        Mostrando <strong>{{ filteredProducts.length }}</strong> de <strong>{{ products.length }}</strong> productos
+      </span>
+    </div>
+  </div>
+
   <!-- Loading State -->
   <div *ngIf="loading" class="state-card loading-state">
     <div class="spinner"></div>
@@ -27,8 +135,18 @@
     <p>Comienza agregando tu primer producto</p>
   </div>
 
+  <!-- No Results State -->
+  <div *ngIf="!loading && products.length > 0 && filteredProducts.length === 0" class="state-card empty-state">
+    <span class="state-icon">🔍</span>
+    <h3>No se encontraron resultados</h3>
+    <p>Intenta con otros términos de búsqueda</p>
+    <button class="btn-primary" (click)="clearFilters()" style="margin-top: 16px;">
+      Limpiar filtros
+    </button>
+  </div>
+
   <!-- Products Table -->
-  <div *ngIf="!loading && products.length > 0" class="table-card">
+  <div *ngIf="!loading && filteredProducts.length > 0" class="table-card">
     <div class="table-wrapper">
       <table class="products-table">
         <thead>
@@ -42,7 +160,6 @@
           </tr>
         </thead>
         <tbody>
-          <!-- CAMBIO: usar paginatedProducts en lugar de products -->
           <tr *ngFor="let p of paginatedProducts" class="product-row">
             <td data-label="ID" class="cell-id">
               <span class="id-badge">{{ p.id }}</span>
@@ -76,14 +193,13 @@
       </table>
     </div>
 
-    <!-- NUEVO: PAGINACIÓN -->
+    <!-- PAGINACIÓN -->
     <div class="pagination-container">
-      <!-- Info de registros -->
       <div class="pagination-info">
         <span class="records-info">
           Mostrando {{ (currentPage - 1) * itemsPerPage + 1 }} - 
-          {{ Math.min(currentPage * itemsPerPage, products.length) }} 
-          de {{ products.length }} productos
+          {{ Math.min(currentPage * itemsPerPage, filteredProducts.length) }} 
+          de {{ filteredProducts.length }} productos
         </span>
         
         <select 
@@ -96,9 +212,7 @@
         </select>
       </div>
 
-      <!-- Controles de paginación -->
       <div class="pagination-controls">
-        <!-- Primera página -->
         <button 
           (click)="goToPage(1)" 
           [disabled]="currentPage === 1"
@@ -107,7 +221,6 @@
           ⏮️
         </button>
         
-        <!-- Página anterior -->
         <button 
           (click)="goToPage(currentPage - 1)" 
           [disabled]="currentPage === 1"
@@ -116,7 +229,6 @@
           ◀️
         </button>
 
-        <!-- Números de página -->
         <button 
           *ngFor="let page of getPageNumbers()"
           (click)="goToPage(page)"
@@ -125,7 +237,6 @@
           {{ page }}
         </button>
 
-        <!-- Página siguiente -->
         <button 
           (click)="goToPage(currentPage + 1)" 
           [disabled]="currentPage === totalPages"
@@ -134,7 +245,6 @@
           ▶️
         </button>
         
-        <!-- Última página -->
         <button 
           (click)="goToPage(totalPages)" 
           [disabled]="currentPage === totalPages"
